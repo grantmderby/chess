@@ -43,6 +43,38 @@ public class ChessBoard
      */
     public void resetBoard()
     {
-        throw new RuntimeException("Not implemented");
+        squares = new ChessPiece[8][8];
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder result = new StringBuilder();
+
+        for(int i = 0; i<8;i++)
+        {
+            for(int k =0;k<8;k++)
+            {
+                result.append("[");
+                if(squares[i][k]!=null)
+                {
+                    switch(squares[i][k].getPieceType())
+                    {
+                        case ChessPiece.PieceType.KING -> result.append("K");
+                        case ChessPiece.PieceType.QUEEN -> result.append("Q");
+                        case ChessPiece.PieceType.KNIGHT -> result.append("N");
+                        case ChessPiece.PieceType.ROOK -> result.append("R");
+                        case ChessPiece.PieceType.BISHOP -> result.append("B");
+                        case ChessPiece.PieceType.PAWN -> result.append("P");
+                    }
+                }
+                else result.append(" ");
+
+                result.append("]");
+            }
+            result.append("\n");
+        }
+
+        return ""+result;
     }
 }
