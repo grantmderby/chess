@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -9,6 +12,24 @@ package chess;
 public class ChessBoard
 {
     ChessPiece[][] squares = new ChessPiece[8][8];
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(squares, that.squares);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Arrays.deepHashCode(squares);
+    }
+
     public ChessBoard()
     {
 
@@ -22,7 +43,7 @@ public class ChessBoard
      */
     public void addPiece(ChessPosition position, ChessPiece piece)
     {
-        squares[position.getRow()-1][position.getColumn()-1] = piece;
+        squares[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
     /**
@@ -34,7 +55,7 @@ public class ChessBoard
      */
     public ChessPiece getPiece(ChessPosition position)
     {
-        return squares[position.getRow()-1][position.getColumn()-1];
+        return squares[position.getRow() - 1][position.getColumn() - 1];
     }
 
     /**
@@ -44,6 +65,31 @@ public class ChessBoard
     public void resetBoard()
     {
         squares = new ChessPiece[8][8];
+        addPiece(new ChessPosition(1, 1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
+        addPiece(new ChessPosition(1, 2), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
+        addPiece(new ChessPosition(1, 3), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
+        addPiece(new ChessPosition(1, 4), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN));
+        addPiece(new ChessPosition(1, 5), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING));
+        addPiece(new ChessPosition(1, 6), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
+        addPiece(new ChessPosition(1, 7), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
+        addPiece(new ChessPosition(1, 8), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
+
+        addPiece(new ChessPosition(8, 1), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
+        addPiece(new ChessPosition(8, 2), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
+        addPiece(new ChessPosition(8, 3), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
+        addPiece(new ChessPosition(8, 4), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN));
+        addPiece(new ChessPosition(8, 5), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
+        addPiece(new ChessPosition(8, 6), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
+        addPiece(new ChessPosition(8, 7), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
+        addPiece(new ChessPosition(8, 8), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
+
+        for(int i = 1;i<=8;i++)
+        {
+            addPiece(new ChessPosition(2, i), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
+            addPiece(new ChessPosition(7, i), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+        }
+
+
     }
 
     @Override
@@ -51,30 +97,47 @@ public class ChessBoard
     {
         StringBuilder result = new StringBuilder();
 
-        for(int i = 0; i<8;i++)
+        for (int i = 0; i < 8; i++)
         {
-            for(int k =0;k<8;k++)
+            for (int k = 0; k < 8; k++)
             {
                 result.append("[");
-                if(squares[i][k]!=null)
+                if (squares[i][k] != null)
                 {
-                    switch(squares[i][k].getPieceType())
+                    if (squares[i][k].getTeamColor() == ChessGame.TeamColor.WHITE)
                     {
-                        case ChessPiece.PieceType.KING -> result.append("K");
-                        case ChessPiece.PieceType.QUEEN -> result.append("Q");
-                        case ChessPiece.PieceType.KNIGHT -> result.append("N");
-                        case ChessPiece.PieceType.ROOK -> result.append("R");
-                        case ChessPiece.PieceType.BISHOP -> result.append("B");
-                        case ChessPiece.PieceType.PAWN -> result.append("P");
+                        switch (squares[i][k].getPieceType())
+                        {
+                            case ChessPiece.PieceType.KING -> result.append("k");
+                            case ChessPiece.PieceType.QUEEN -> result.append("q");
+                            case ChessPiece.PieceType.KNIGHT -> result.append("n");
+                            case ChessPiece.PieceType.ROOK -> result.append("r");
+                            case ChessPiece.PieceType.BISHOP -> result.append("b");
+                            case ChessPiece.PieceType.PAWN -> result.append("p");
+                        }
+                    } else
+                    {
+                        switch (squares[i][k].getPieceType())
+                        {
+                            case ChessPiece.PieceType.KING -> result.append("K");
+                            case ChessPiece.PieceType.QUEEN -> result.append("Q");
+                            case ChessPiece.PieceType.KNIGHT -> result.append("N");
+                            case ChessPiece.PieceType.ROOK -> result.append("R");
+                            case ChessPiece.PieceType.BISHOP -> result.append("B");
+                            case ChessPiece.PieceType.PAWN -> result.append("P");
+                        }
                     }
+
+                } else
+                {
+                    result.append(" ");
                 }
-                else result.append(" ");
 
                 result.append("]");
             }
             result.append("\n");
         }
 
-        return ""+result;
+        return "" + result;
     }
 }
