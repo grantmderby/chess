@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -33,7 +34,7 @@ public class ChessPiece
         return Objects.hash(pieceColor, type);
     }
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type)
+    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type)
     {
         this.pieceColor = pieceColor;
         this.type = type;
@@ -75,16 +76,75 @@ public class ChessPiece
      *
      * @return Collection of valid moves
      */
+
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition)
     {
         ChessPiece piece = board.getPiece(myPosition);
 
-        /*if(piece.getPieceType() == PieceType.BISHOP)
-        {
-            return List.of(new ChessMove(new ChessPosition(5,4), new ChessPosition(1,8),null));
-        }*/
-        return List.of();
+        ChessPosition attemptedPosition;
 
-        //return pieceMoveCalculator(
+        if (piece.getPieceType() == PieceType.BISHOP)
+        {
+            List<ChessMove> possibleMoves = new ArrayList<>();
+
+            for (int row = myPosition.getRow() + 1, col = myPosition.getColumn() + 1; row <= 8 && col <= 8; row++, col++)
+            {
+                attemptedPosition = new ChessPosition(row, col);
+                if(board.getPiece(attemptedPosition)!=null)
+                {
+                    if (board.getPiece(attemptedPosition).pieceColor != piece.pieceColor)
+                    {
+                        possibleMoves.add(new ChessMove(myPosition, attemptedPosition, null));
+                    }
+                    break;
+                }
+                possibleMoves.add(new ChessMove(myPosition, attemptedPosition, null));
+            }
+
+            for (int row = myPosition.getRow() - 1, col = myPosition.getColumn() - 1; row >= 1 && col >= 1; row--, col--)
+            {
+                attemptedPosition = new ChessPosition(row, col);
+                if(board.getPiece(attemptedPosition)!=null)
+                {
+                    if (board.getPiece(attemptedPosition).pieceColor != piece.pieceColor)
+                    {
+                        possibleMoves.add(new ChessMove(myPosition, attemptedPosition, null));
+                    }
+                    break;
+                }
+                possibleMoves.add(new ChessMove(myPosition, attemptedPosition, null));
+            }
+
+            for (int row = myPosition.getRow() - 1, col = myPosition.getColumn() + 1; row >= 1 && col <= 8; row--, col++)
+            {
+                attemptedPosition = new ChessPosition(row, col);
+                if(board.getPiece(attemptedPosition)!=null)
+                {
+                    if (board.getPiece(attemptedPosition).pieceColor != piece.pieceColor)
+                    {
+                        possibleMoves.add(new ChessMove(myPosition, attemptedPosition, null));
+                    }
+                    break;
+                }
+                possibleMoves.add(new ChessMove(myPosition, attemptedPosition, null));
+            }
+
+            for (int row = myPosition.getRow() + 1, col = myPosition.getColumn() - 1; row <= 8 && col >= 1; row++, col--)
+            {
+                attemptedPosition = new ChessPosition(row, col);
+                if(board.getPiece(attemptedPosition)!=null)
+                {
+                    if (board.getPiece(attemptedPosition).pieceColor != piece.pieceColor)
+                    {
+                        possibleMoves.add(new ChessMove(myPosition, attemptedPosition, null));
+                    }
+                    break;
+                }
+                possibleMoves.add(new ChessMove(myPosition, attemptedPosition, null));
+            }
+
+            return possibleMoves;
+        }
+        return List.of(new ChessMove(myPosition, new ChessPosition(8, 8), null));
     }
 }
