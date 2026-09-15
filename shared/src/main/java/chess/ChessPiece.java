@@ -81,42 +81,94 @@ public class ChessPiece
     {
         ChessPiece piece = board.getPiece(myPosition);
 
-        ChessPosition attemptedPosition;
-
         if (piece.getPieceType() == PieceType.BISHOP)
         {
             List<ChessMove> possibleMoves = new ArrayList<>();
 
             for (int row = myPosition.getRow() + 1, col = myPosition.getColumn() + 1; row <= 8 && col <= 8; row++, col++)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col))break;
+                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
 
             for (int row = myPosition.getRow() - 1, col = myPosition.getColumn() - 1; row >= 1 && col >= 1; row--, col--)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col))break;
+                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
 
             for (int row = myPosition.getRow() - 1, col = myPosition.getColumn() + 1; row >= 1 && col <= 8; row--, col++)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col))break;
+                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
 
             for (int row = myPosition.getRow() + 1, col = myPosition.getColumn() - 1; row <= 8 && col >= 1; row++, col--)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col))break;
+                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
 
             return possibleMoves;
         }
 
-        if(piece.getPieceType()==PieceType.ROOK)
+        if (piece.getPieceType() == PieceType.ROOK)
         {
             List<ChessMove> possibleMoves = new ArrayList<>();
 
             for (int row = myPosition.getRow() + 1, col = myPosition.getColumn(); row <= 8; row++)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col))break;
+                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
 
             for (int row = myPosition.getRow() - 1, col = myPosition.getColumn(); row >= 1; row--)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col))break;
+                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
 
             for (int row = myPosition.getRow(), col = myPosition.getColumn() + 1; col <= 8; col++)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col))break;
+                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
 
             for (int row = myPosition.getRow(), col = myPosition.getColumn() - 1; col >= 1; col--)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col))break;
+                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+
+            return possibleMoves;
+        }
+
+        if (piece.getPieceType() == PieceType.QUEEN)
+        {
+            List<ChessMove> possibleMoves = new ArrayList<>();
+
+            for (int row = myPosition.getRow() + 1, col = myPosition.getColumn(); row <= 8; row++)
+                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+
+            for (int row = myPosition.getRow() - 1, col = myPosition.getColumn(); row >= 1; row--)
+                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+
+            for (int row = myPosition.getRow(), col = myPosition.getColumn() + 1; col <= 8; col++)
+                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+
+            for (int row = myPosition.getRow(), col = myPosition.getColumn() - 1; col >= 1; col--)
+                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+
+            for (int row = myPosition.getRow() + 1, col = myPosition.getColumn() + 1; row <= 8 && col <= 8; row++, col++)
+                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+
+            for (int row = myPosition.getRow() - 1, col = myPosition.getColumn() - 1; row >= 1 && col >= 1; row--, col--)
+                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+
+            for (int row = myPosition.getRow() - 1, col = myPosition.getColumn() + 1; row >= 1 && col <= 8; row--, col++)
+                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+
+            for (int row = myPosition.getRow() + 1, col = myPosition.getColumn() - 1; row <= 8 && col >= 1; row++, col--)
+                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+
+            return possibleMoves;
+        }
+
+        if (piece.getPieceType() == PieceType.KING)
+        {
+            List<ChessMove> possibleMoves = new ArrayList<>();
+
+            boolean[][] validSquares = new boolean[3][3];
+
+
+            for(int i=-1, row = myPosition.getRow(), col = myPosition.getColumn();i<2;i++)
+                for(int k=-1;k<2;k++)
+                {
+                    int checkRow=row+i, checkCol=col+k;
+                    if(checkRow<=8&&checkRow>=1&&checkCol<=8&&checkCol>=1)validSquares[i+1][k+1]=true;
+                }
+            validSquares[1][1]=false;
+
+            for (int row = myPosition.getRow() - 1, r=0; row <= myPosition.getRow()+1; row++, r++)
+                for(int col = myPosition.getColumn()-1, c=0; col<= myPosition.getColumn()+1; col++, c++)
+                    if(validSquares[r][c])
+                        if(checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
 
             return possibleMoves;
         }
@@ -131,7 +183,7 @@ public class ChessPiece
     {
         ChessPosition attemptedPosition;
         attemptedPosition = new ChessPosition(row, col);
-        if(board.getPiece(attemptedPosition)!=null)
+        if (board.getPiece(attemptedPosition) != null)
         {
             if (board.getPiece(attemptedPosition).pieceColor != piece.pieceColor)
                 possibleMoves.add(new ChessMove(myPosition, attemptedPosition, null));
