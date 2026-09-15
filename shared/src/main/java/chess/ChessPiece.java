@@ -150,21 +150,16 @@ public class ChessPiece
 
         if (piece.getPieceType() == PieceType.KING)
         {
+            int row = myPosition.getRow(), col = myPosition.getColumn();
 
-            boolean[][] validSquares = new boolean[3][3];
-
-            for(int i=-1, row = myPosition.getRow(), col = myPosition.getColumn();i<2;i++)
-                for(int k=-1;k<2;k++)
-                {
-                    int checkRow=row+i, checkCol=col+k;
-                    if(checkRow<=8&&checkRow>=1&&checkCol<=8&&checkCol>=1)validSquares[i+1][k+1]=true;
-                }
-            validSquares[1][1]=false;
-
-            for (int row = myPosition.getRow() - 1, r=0; row <= myPosition.getRow()+1; row++, r++)
-                for(int col = myPosition.getColumn()-1, c=0; col<= myPosition.getColumn()+1; col++, c++)
-                    if(validSquares[r][c])
-                        if(checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+            if(row+1<=8&&col+1<=8)checkForPiece(board, myPosition, piece, possibleMoves, row+1, col+1);
+            if(row+1<=8)          checkForPiece(board, myPosition, piece, possibleMoves, row+1, col);
+            if(row+1<=8&&col-1>=1)checkForPiece(board, myPosition, piece, possibleMoves, row+1, col-1);
+            if(col+1<=8)          checkForPiece(board, myPosition, piece, possibleMoves, row, col+1);
+            if(col-1>=1)          checkForPiece(board, myPosition, piece, possibleMoves, row, col-1);
+            if(row-1>=1&&col+1<=8)checkForPiece(board, myPosition, piece, possibleMoves, row-1, col+1);
+            if(row-1>=1)          checkForPiece(board, myPosition, piece, possibleMoves, row-1, col);
+            if(row-1>=1&&col-1>=1)checkForPiece(board, myPosition, piece, possibleMoves, row-1, col-1);
 
             return possibleMoves;
         }
@@ -185,7 +180,107 @@ public class ChessPiece
             return possibleMoves;
         }
 
+        if(piece.getPieceType() == PieceType.PAWN)
+        {
+            int row = myPosition.getRow(), col = myPosition.getColumn();
+            ChessPosition attemptedPosition;
 
+            if(pieceColor == ChessGame.TeamColor.WHITE)
+            {
+                row++;
+                attemptedPosition = new ChessPosition(row, col);
+
+                if(row<=8&&board.getPiece(attemptedPosition)==null)
+                {
+                    if(row==8)
+                        for(int i=1;i<5;i++)
+                            possibleMoves.add(new ChessMove(myPosition,attemptedPosition, PieceType.values()[i]));
+
+                    else
+                    {
+                        possibleMoves.add(new ChessMove(myPosition,attemptedPosition, null));
+                        if(row-1==2&&board.getPiece(new ChessPosition(row+1,col))==null)
+                            possibleMoves.add(new ChessMove(myPosition,new ChessPosition(row+1,col), null));
+                    }
+                }
+
+                col--;
+                attemptedPosition = new ChessPosition(row, col);
+
+                if(row<=8&&col>=1&&board.getPiece(attemptedPosition)!=null&&board.getPiece(attemptedPosition).pieceColor!= ChessGame.TeamColor.WHITE)
+                {
+                    if(row==8)
+                        for(int i=1;i<5;i++)
+                            possibleMoves.add(new ChessMove(myPosition,attemptedPosition, PieceType.values()[i]));
+
+                    else
+                        possibleMoves.add(new ChessMove(myPosition,attemptedPosition, null));
+                }
+
+                col+=2;
+                attemptedPosition = new ChessPosition(row, col);
+
+                if(row<=8&&col<=8&&board.getPiece(attemptedPosition)!=null&&board.getPiece(attemptedPosition).pieceColor!= ChessGame.TeamColor.WHITE)
+                {
+                    if(row==8)
+                        for(int i=1;i<5;i++)
+                            possibleMoves.add(new ChessMove(myPosition,attemptedPosition, PieceType.values()[i]));
+
+                    else
+                        possibleMoves.add(new ChessMove(myPosition,attemptedPosition, null));
+                }
+
+            }
+
+            if(pieceColor == ChessGame.TeamColor.BLACK)
+            {
+                row--;
+                attemptedPosition = new ChessPosition(row, col);
+
+                if(row>=1&&board.getPiece(attemptedPosition)==null)
+                {
+                    if(row==1)
+                        for(int i=1;i<5;i++)
+                            possibleMoves.add(new ChessMove(myPosition,attemptedPosition, PieceType.values()[i]));
+
+                    else
+                    {
+                        possibleMoves.add(new ChessMove(myPosition,attemptedPosition, null));
+                        if(row+1==7&&board.getPiece(new ChessPosition(row-1,col))==null)
+                            possibleMoves.add(new ChessMove(myPosition,new ChessPosition(row-1,col), null));
+                    }
+                }
+
+                col--;
+                attemptedPosition = new ChessPosition(row, col);
+
+                if(row>=1&&col>=1&&board.getPiece(attemptedPosition)!=null&&board.getPiece(attemptedPosition).pieceColor!= ChessGame.TeamColor.BLACK)
+                {
+                    if(row==1)
+                        for(int i=1;i<5;i++)
+                            possibleMoves.add(new ChessMove(myPosition,attemptedPosition, PieceType.values()[i]));
+
+                    else
+                        possibleMoves.add(new ChessMove(myPosition,attemptedPosition, null));
+                }
+
+                col+=2;
+                attemptedPosition = new ChessPosition(row, col);
+
+                if(row>=1&&col<=8&&board.getPiece(attemptedPosition)!=null&&board.getPiece(attemptedPosition).pieceColor!= ChessGame.TeamColor.BLACK)
+                {
+                    if(row==1)
+                        for(int i=1;i<5;i++)
+                            possibleMoves.add(new ChessMove(myPosition,attemptedPosition, PieceType.values()[i]));
+
+                    else
+                        possibleMoves.add(new ChessMove(myPosition,attemptedPosition, null));
+                }
+
+            }
+
+            return possibleMoves;
+        }
 
 
         return List.of(new ChessMove(myPosition, new ChessPosition(8, 8), null));
