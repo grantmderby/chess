@@ -80,10 +80,10 @@ public class ChessPiece
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition)
     {
         ChessPiece piece = board.getPiece(myPosition);
+        List<ChessMove> possibleMoves = new ArrayList<>();
 
         if (piece.getPieceType() == PieceType.BISHOP)
         {
-            List<ChessMove> possibleMoves = new ArrayList<>();
 
             for (int row = myPosition.getRow() + 1, col = myPosition.getColumn() + 1; row <= 8 && col <= 8; row++, col++)
                 if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
@@ -102,7 +102,6 @@ public class ChessPiece
 
         if (piece.getPieceType() == PieceType.ROOK)
         {
-            List<ChessMove> possibleMoves = new ArrayList<>();
 
             for (int row = myPosition.getRow() + 1, col = myPosition.getColumn(); row <= 8; row++)
                 if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
@@ -121,7 +120,6 @@ public class ChessPiece
 
         if (piece.getPieceType() == PieceType.QUEEN)
         {
-            List<ChessMove> possibleMoves = new ArrayList<>();
 
             for (int row = myPosition.getRow() + 1, col = myPosition.getColumn(); row <= 8; row++)
                 if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
@@ -152,10 +150,8 @@ public class ChessPiece
 
         if (piece.getPieceType() == PieceType.KING)
         {
-            List<ChessMove> possibleMoves = new ArrayList<>();
 
             boolean[][] validSquares = new boolean[3][3];
-
 
             for(int i=-1, row = myPosition.getRow(), col = myPosition.getColumn();i<2;i++)
                 for(int k=-1;k<2;k++)
@@ -169,6 +165,22 @@ public class ChessPiece
                 for(int col = myPosition.getColumn()-1, c=0; col<= myPosition.getColumn()+1; col++, c++)
                     if(validSquares[r][c])
                         if(checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+
+            return possibleMoves;
+        }
+
+        if (piece.getPieceType() == PieceType.KNIGHT)
+        {
+            int row = myPosition.getRow(), col = myPosition.getColumn();
+
+            if(row+2<=8&&col+1<=8)checkForPiece(board, myPosition, piece, possibleMoves, row+2, col+1);
+            if(row+2<=8&&col-1>=1)checkForPiece(board, myPosition, piece, possibleMoves, row+2, col-1);
+            if(row-2>=1&&col+1<=8)checkForPiece(board, myPosition, piece, possibleMoves, row-2, col+1);
+            if(row-2>=1&&col-1>=1)checkForPiece(board, myPosition, piece, possibleMoves, row-2, col-1);
+            if(col+2<=8&&row+1<=8)checkForPiece(board, myPosition, piece, possibleMoves, row+1, col+2);
+            if(col+2<=8&&row-1>=1)checkForPiece(board, myPosition, piece, possibleMoves, row-1, col+2);
+            if(col-2>=1&&row+1<=8)checkForPiece(board, myPosition, piece, possibleMoves, row+1, col-2);
+            if(col-2>=1&&row-1>=1)checkForPiece(board, myPosition, piece, possibleMoves, row-1, col-2);
 
             return possibleMoves;
         }
