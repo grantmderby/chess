@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+
+
 /**
  * Represents a single chess piece
  * <p>
@@ -13,7 +15,6 @@ import java.util.Objects;
  */
 public class ChessPiece
 {
-
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
 
@@ -84,67 +85,20 @@ public class ChessPiece
 
         if (piece.getPieceType() == PieceType.BISHOP)
         {
-
-            for (int row = myPosition.getRow() + 1, col = myPosition.getColumn() + 1; row <= 8 && col <= 8; row++, col++)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
-
-            for (int row = myPosition.getRow() - 1, col = myPosition.getColumn() - 1; row >= 1 && col >= 1; row--, col--)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
-
-            for (int row = myPosition.getRow() - 1, col = myPosition.getColumn() + 1; row >= 1 && col <= 8; row--, col++)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
-
-            for (int row = myPosition.getRow() + 1, col = myPosition.getColumn() - 1; row <= 8 && col >= 1; row++, col--)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
-
+            bishopCheck(board, myPosition, piece, possibleMoves);
             return possibleMoves;
         }
 
         if (piece.getPieceType() == PieceType.ROOK)
         {
-
-            for (int row = myPosition.getRow() + 1, col = myPosition.getColumn(); row <= 8; row++)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
-
-            for (int row = myPosition.getRow() - 1, col = myPosition.getColumn(); row >= 1; row--)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
-
-            for (int row = myPosition.getRow(), col = myPosition.getColumn() + 1; col <= 8; col++)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
-
-            for (int row = myPosition.getRow(), col = myPosition.getColumn() - 1; col >= 1; col--)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
-
+            rookCheck(board, myPosition, piece, possibleMoves);
             return possibleMoves;
         }
 
         if (piece.getPieceType() == PieceType.QUEEN)
         {
-
-            for (int row = myPosition.getRow() + 1, col = myPosition.getColumn(); row <= 8; row++)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
-
-            for (int row = myPosition.getRow() - 1, col = myPosition.getColumn(); row >= 1; row--)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
-
-            for (int row = myPosition.getRow(), col = myPosition.getColumn() + 1; col <= 8; col++)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
-
-            for (int row = myPosition.getRow(), col = myPosition.getColumn() - 1; col >= 1; col--)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
-
-            for (int row = myPosition.getRow() + 1, col = myPosition.getColumn() + 1; row <= 8 && col <= 8; row++, col++)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
-
-            for (int row = myPosition.getRow() - 1, col = myPosition.getColumn() - 1; row >= 1 && col >= 1; row--, col--)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
-
-            for (int row = myPosition.getRow() - 1, col = myPosition.getColumn() + 1; row >= 1 && col <= 8; row--, col++)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
-
-            for (int row = myPosition.getRow() + 1, col = myPosition.getColumn() - 1; row <= 8 && col >= 1; row++, col--)
-                if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
-
+            rookCheck(board, myPosition, piece, possibleMoves);
+            bishopCheck(board, myPosition, piece, possibleMoves);
             return possibleMoves;
         }
 
@@ -284,6 +238,36 @@ public class ChessPiece
 
 
         return List.of(new ChessMove(myPosition, new ChessPosition(8, 8), null));
+    }
+
+    private void bishopCheck(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> possibleMoves)
+    {
+        for (int row = myPosition.getRow() + 1, col = myPosition.getColumn() + 1; row <= 8 && col <= 8; row++, col++)
+            if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+
+        for (int row = myPosition.getRow() - 1, col = myPosition.getColumn() - 1; row >= 1 && col >= 1; row--, col--)
+            if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+
+        for (int row = myPosition.getRow() - 1, col = myPosition.getColumn() + 1; row >= 1 && col <= 8; row--, col++)
+            if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+
+        for (int row = myPosition.getRow() + 1, col = myPosition.getColumn() - 1; row <= 8 && col >= 1; row++, col--)
+            if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+    }
+
+    private void rookCheck(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> possibleMoves)
+    {
+        for (int row = myPosition.getRow() + 1, col = myPosition.getColumn(); row <= 8; row++)
+            if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+
+        for (int row = myPosition.getRow() - 1, col = myPosition.getColumn(); row >= 1; row--)
+            if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+
+        for (int row = myPosition.getRow(), col = myPosition.getColumn() + 1; col <= 8; col++)
+            if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
+
+        for (int row = myPosition.getRow(), col = myPosition.getColumn() - 1; col >= 1; col--)
+            if (checkForPiece(board, myPosition, piece, possibleMoves, row, col)) break;
     }
 
     private boolean checkForPiece(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> possibleMoves, int row, int col)
