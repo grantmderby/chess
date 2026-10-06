@@ -137,34 +137,7 @@ public class ChessGame
     public boolean isInCheckmate(TeamColor teamColor)
     {
         if(isInCheck(teamColor))                                                                    //First checks if current team is in check
-        {
-            ChessGame testBoard = new ChessGame(board);                                             //Creates a deep copy of the current board
-            Collection<ChessMove> teamMoves;
-            if(teamColor==TeamColor.WHITE) teamMoves = testBoard.getAllTeamMoves(TeamColor.BLACK);  //Gets a copy of all of our team's possible moves
-            else teamMoves = testBoard.getAllTeamMoves(TeamColor.WHITE);                            //Does some flip-flop of the colors because of other functions
-
-            for(ChessMove move : teamMoves)                                                          //Runs through all of our team's valid moves
-            {
-                try
-                {
-                    var eatenPiece=testBoard.getBoard().getPiece(move.getEndPosition());
-                    testBoard.makeMove(move);                                                        //Executes a possible valid move on the test board
-                    if(!testBoard.isInCheck(teamColor))                                              //If we are taken out of check all is well, no checkMate
-                        return false;
-                    else
-                    {
-                        testBoard.getBoard().addPiece(move.getStartPosition(),testBoard.getBoard().getPiece(move.getEndPosition()));
-                        testBoard.getBoard().removePiece(move.getEndPosition());                          //Resets a move if we were still in check
-                        testBoard.getBoard().addPiece(move.getEndPosition(),eatenPiece);
-                    }
-                }catch (InvalidMoveException e)                                                      //If we throw this exception, something is really broken. IDK how to cause this
-                {
-                    System.out.println("Something went wrong");
-                    return false;
-                }
-            }
-            return true;
-        }
+            return mateHelper(teamColor);
         return false;
     }
 
@@ -177,7 +150,42 @@ public class ChessGame
      */
     public boolean isInStalemate(TeamColor teamColor)
     {
-        return false;
+        if(isInCheck(teamColor))                                                                    //First checks if we are in check
+            return false;
+
+        else
+            return mateHelper(teamColor);
+    }
+
+    private boolean mateHelper(TeamColor teamColor)
+    {
+        ChessGame testBoard = new ChessGame(board);                                             //Creates a deep copy of the current board
+        Collection<ChessMove> teamMoves;
+        if(teamColor== TeamColor.WHITE) teamMoves = testBoard.getAllTeamMoves(TeamColor.BLACK);  //Gets a copy of all of our team's possible moves
+        else teamMoves = testBoard.getAllTeamMoves(TeamColor.WHITE);                            //Does some flip-flop of the colors because of other functions
+        if(teamMoves.isEmpty())return true;
+
+        for(ChessMove move : teamMoves)                                                          //Runs through all of our team's valid moves
+        {
+            try
+            {
+                var eatenPiece=testBoard.getBoard().getPiece(move.getEndPosition());
+                testBoard.makeMove(move);                                                        //Executes a possible valid move on the test board
+                if(!testBoard.isInCheck(teamColor))                                              //If we are taken out of check all is well, no checkMate
+                    return false;
+                else
+                {
+                    testBoard.getBoard().addPiece(move.getStartPosition(),testBoard.getBoard().getPiece(move.getEndPosition()));
+                    testBoard.getBoard().removePiece(move.getEndPosition());                          //Resets a move if we were still in check
+                    testBoard.getBoard().addPiece(move.getEndPosition(),eatenPiece);
+                }
+            }catch (InvalidMoveException e)                                                      //If we throw this exception, something is really broken. IDK how to cause this
+            {
+                System.out.println("Something went wrong");
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -213,4 +221,7 @@ public class ChessGame
             }
         return allEnemyMoves;
     }
+
+
+
 }
