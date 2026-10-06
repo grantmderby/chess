@@ -2,7 +2,6 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -108,14 +107,17 @@ public class ChessGame
 
     public void makeMove(ChessMove move) throws InvalidMoveException
     {
-        if(!validMoves(move.getStartPosition()).contains(move))
+        if(getBoard().getPiece(move.getStartPosition())==null||getBoard().getPiece(move.getStartPosition()).getTeamColor()!=getTeamTurn()||!validMoves(move.getStartPosition()).contains(move))
         {
             throw new InvalidMoveException("Move not valid");
         }
         else
         {
-            board.addPiece(move.getEndPosition(),board.getPiece(move.getStartPosition()));
-            board.removePiece(move.getStartPosition());
+            if(move.getPromotionPiece()!=null)
+                getBoard().addPiece(move.getEndPosition(),new ChessPiece(getBoard().getPiece(move.getStartPosition()).getTeamColor(),move.getPromotionPiece()));
+            else
+                getBoard().addPiece(move.getEndPosition(),getBoard().getPiece(move.getStartPosition()));
+            getBoard().removePiece(move.getStartPosition());
             if(getTeamTurn()==TeamColor.WHITE)setTeamTurn(TeamColor.BLACK);
             else setTeamTurn(TeamColor.WHITE);
         }
@@ -177,7 +179,7 @@ public class ChessGame
 
     private boolean mateHelper(TeamColor teamColor)
     {
-        ChessGame testBoard = new ChessGame(board);                                             //Creates a deep copy of the current board
+        ChessGame testBoard = new ChessGame(getBoard());                                             //Creates a deep copy of the current board
         Collection<ChessMove> teamMoves;
         if(teamColor== TeamColor.WHITE) teamMoves = testBoard.getAllTeamMoves(TeamColor.BLACK);  //Gets a copy of all of our team's possible moves
         else teamMoves = testBoard.getAllTeamMoves(TeamColor.WHITE);                            //Does some flip-flop of the colors because of other functions
