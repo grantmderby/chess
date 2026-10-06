@@ -32,7 +32,6 @@ public class ChessBoard
 
     public ChessBoard()
     {
-
     }
 
     /**
@@ -56,6 +55,11 @@ public class ChessBoard
     public ChessPiece getPiece(ChessPosition position)
     {
         return squares[position.getRow() - 1][position.getColumn() - 1];
+    }
+
+    public void removePiece(ChessPosition position)
+    {
+        squares[position.getRow()-1][position.getColumn()-1]=null;
     }
 
     /**
