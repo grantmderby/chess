@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -70,8 +71,9 @@ public class ChessGame
     public Collection<ChessMove> validMoves(ChessPosition startPosition)
     {
         var pieceMove = board.getPiece(startPosition).pieceMoves(board,startPosition);
-        if(!isInCheck(getTeamTurn())) return pieceMove;
-        else return pieceMove; //temporary line
+        /*if(!isInCheck(getTeamTurn())) return pieceMove;
+        else return pieceMove; //temporary line*/
+        return pieceMove;
     }
 
     /**
@@ -80,16 +82,15 @@ public class ChessGame
      * @param move chess move to perform
      * @throws InvalidMoveException if move is invalid
      */
+
     public void makeMove(ChessMove move) throws InvalidMoveException
     {
-        //throw new RuntimeException("Not implemented");
         if(!validMoves(move.getStartPosition()).contains(new ChessMove(move.getStartPosition(),move.getEndPosition(),move.getPromotionPiece())))
         {
             throw new InvalidMoveException("Move not valid");
         }
         else
         {
-            //new ChessMove(move.getStartPosition(),move.getEndPosition(),move.getPromotionPiece());
             board.addPiece(move.getEndPosition(),board.getPiece(move.getStartPosition()));
             board.removePiece(move.getStartPosition());
             if(getTeamTurn()==TeamColor.WHITE)setTeamTurn(TeamColor.BLACK);
@@ -105,6 +106,20 @@ public class ChessGame
      */
     public boolean isInCheck(TeamColor teamColor)
     {
+        try
+        {
+            var king=board.getKing(teamColor);
+            var enemyMoves=getAllEnemyMoves(teamColor);
+            for(ChessMove move : enemyMoves)
+                if(move.getEndPosition().getRow()==king.getRow()&&move.getEndPosition().getColumn()==king.getColumn())
+                    return true;
+        }
+        catch(InvalidMoveException _)
+        {
+            System.out.println("No king detected??");
+            return false;
+        }
+
         return false;
     }
 
@@ -149,5 +164,19 @@ public class ChessGame
     public ChessBoard getBoard()
     {
         return this.board;
+    }
+
+    private Collection<ChessMove> getAllEnemyMoves(TeamColor teamColor)
+    {
+        Collection<ChessMove> allEnemyMoves = new ArrayList<>();
+
+        var enemyPieces = board.getEnemies(teamColor);
+
+        for(int row=1;row<=8;row++)
+            for(int col=1;col<=8;col++)
+            {
+                if(enemyPieces[row-1][col-1]!=null)allEnemyMoves.addAll(validMoves(new ChessPosition(row,col)));
+            }
+        return allEnemyMoves;
     }
 }

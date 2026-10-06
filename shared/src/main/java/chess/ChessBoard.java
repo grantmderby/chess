@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -60,6 +61,33 @@ public class ChessBoard
     public void removePiece(ChessPosition position)
     {
         squares[position.getRow()-1][position.getColumn()-1]=null;
+    }
+
+    public ChessPosition getKing(ChessGame.TeamColor TeamColor) throws InvalidMoveException
+    {
+        for (int row=0;row<8;row++)
+            for(int col=0;col<8;col++)
+            {
+                var piece=squares[row][col];
+                if(piece!=null && piece.getPieceType() == ChessPiece.PieceType.KING&&piece.getTeamColor() == TeamColor)
+                    return new ChessPosition(row+1,col+1);
+            }
+        throw new InvalidMoveException("No King Found");
+    }
+
+    public ChessPiece[][] getEnemies(ChessGame.TeamColor TeamColor)
+    {
+        if(TeamColor == ChessGame.TeamColor.WHITE)TeamColor = ChessGame.TeamColor.BLACK;
+        else TeamColor = ChessGame.TeamColor.WHITE;
+
+        ChessPiece[][] enemies = new ChessPiece[8][8];
+        for (int row=0;row<8;row++)
+            for(int col=0;col<8;col++)
+            {
+                var piece=squares[row][col];
+                if(piece!=null && piece.getTeamColor() == TeamColor)enemies[row][col]=piece;
+            }
+        return enemies;
     }
 
     /**
