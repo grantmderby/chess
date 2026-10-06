@@ -32,7 +32,16 @@ public class ChessBoard
     }
 
     public ChessBoard()
+    {}
+
+    public ChessBoard(ChessBoard other)
     {
+        for(int row=0;row<8;row++)
+            for(int col=0;col<8;col++)
+            {
+                var oldPiece=other.getPiece(new ChessPosition(row+1,col+1));
+                if(oldPiece!=null)squares[row][col]=new ChessPiece(oldPiece.getTeamColor(),oldPiece.getPieceType());
+            }
     }
 
     /**
