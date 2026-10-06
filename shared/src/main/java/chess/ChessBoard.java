@@ -84,19 +84,19 @@ public class ChessBoard
         throw new InvalidMoveException("No King Found");
     }
 
-    public ChessPiece[][] getEnemies(ChessGame.TeamColor TeamColor)
+    public ChessPiece[][] getPieces(ChessGame.TeamColor TeamColor)
     {
         if(TeamColor == ChessGame.TeamColor.WHITE)TeamColor = ChessGame.TeamColor.BLACK;
         else TeamColor = ChessGame.TeamColor.WHITE;
 
-        ChessPiece[][] enemies = new ChessPiece[8][8];
+        ChessPiece[][] pieces = new ChessPiece[8][8];
         for (int row=0;row<8;row++)
             for(int col=0;col<8;col++)
             {
                 var piece=squares[row][col];
-                if(piece!=null && piece.getTeamColor() == TeamColor)enemies[row][col]=piece;
+                if(piece!=null && piece.getTeamColor() == TeamColor)pieces[row][col]=piece;
             }
-        return enemies;
+        return pieces;
     }
 
     /**

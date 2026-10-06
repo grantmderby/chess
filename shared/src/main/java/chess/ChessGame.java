@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -75,10 +76,27 @@ public class ChessGame
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition)
     {
-        var pieceMove = board.getPiece(startPosition).pieceMoves(board,startPosition);
-        /*if(!isInCheck(getTeamTurn())) return pieceMove;
-        else return pieceMove; //temporary line*/
-        return pieceMove;
+        var possibleMoves = getBoard().getPiece(startPosition).pieceMoves(getBoard(),startPosition);
+        ChessGame testBoard = new ChessGame(getBoard());
+        Collection<ChessMove> badMoves = new ArrayList<>();
+
+        for(ChessMove move : possibleMoves)
+        {
+            var eatenPiece=testBoard.getBoard().getPiece(move.getEndPosition());
+            testBoard.getBoard().addPiece(move.getEndPosition(),testBoard.getBoard().getPiece(move.getStartPosition()));
+            testBoard.getBoard().removePiece(move.getStartPosition());
+
+            if(testBoard.getBoard().getPiece(move.getEndPosition())!=null
+                    && testBoard.isInCheck(testBoard.getBoard().getPiece(move.getEndPosition()).getTeamColor()))                                              //If we are taken out of check all is well, no checkMate
+                badMoves.add(move);
+
+            testBoard.getBoard().addPiece(move.getStartPosition(),testBoard.getBoard().getPiece(move.getEndPosition()));
+            testBoard.getBoard().removePiece(move.getEndPosition());
+            testBoard.getBoard().addPiece(move.getEndPosition(),eatenPiece);
+        }
+
+        possibleMoves.removeAll(badMoves);
+        return possibleMoves;
     }
 
     /**
@@ -90,7 +108,7 @@ public class ChessGame
 
     public void makeMove(ChessMove move) throws InvalidMoveException
     {
-        if(!validMoves(move.getStartPosition()).contains(new ChessMove(move.getStartPosition(),move.getEndPosition(),move.getPromotionPiece())))
+        if(!validMoves(move.getStartPosition()).contains(move))
         {
             throw new InvalidMoveException("Move not valid");
         }
@@ -113,7 +131,7 @@ public class ChessGame
     {
         try
         {
-            var king=board.getKing(teamColor);
+            var king=getBoard().getKing(teamColor);
             var enemyMoves=getAllTeamMoves(teamColor);
             for(ChessMove move : enemyMoves)
                 if(move.getEndPosition().getRow()==king.getRow()&&move.getEndPosition().getColumn()==king.getColumn())
@@ -167,22 +185,16 @@ public class ChessGame
 
         for(ChessMove move : teamMoves)                                                          //Runs through all of our team's valid moves
         {
-            try
-            {
-                var eatenPiece=testBoard.getBoard().getPiece(move.getEndPosition());
-                testBoard.makeMove(move);                                                        //Executes a possible valid move on the test board
-                if(!testBoard.isInCheck(teamColor))                                              //If we are taken out of check all is well, no checkMate
-                    return false;
-                else
-                {
-                    testBoard.getBoard().addPiece(move.getStartPosition(),testBoard.getBoard().getPiece(move.getEndPosition()));
-                    testBoard.getBoard().removePiece(move.getEndPosition());                          //Resets a move if we were still in check
-                    testBoard.getBoard().addPiece(move.getEndPosition(),eatenPiece);
-                }
-            }catch (InvalidMoveException e)                                                      //If we throw this exception, something is really broken. IDK how to cause this
-            {
-                System.out.println("Something went wrong");
+            var eatenPiece=testBoard.getBoard().getPiece(move.getEndPosition());
+            testBoard.getBoard().addPiece(move.getEndPosition(),testBoard.getBoard().getPiece(move.getStartPosition()));
+            testBoard.getBoard().removePiece(move.getStartPosition());                                                       //Executes a possible valid move on the test board
+            if(!testBoard.isInCheck(teamColor))                                              //If we are taken out of check all is well, no checkMate
                 return false;
+            else
+            {
+                testBoard.getBoard().addPiece(move.getStartPosition(),testBoard.getBoard().getPiece(move.getEndPosition()));
+                testBoard.getBoard().removePiece(move.getEndPosition());                          //Resets a move if we were still in check
+                testBoard.getBoard().addPiece(move.getEndPosition(),eatenPiece);
             }
         }
         return true;
@@ -210,16 +222,16 @@ public class ChessGame
 
     private Collection<ChessMove> getAllTeamMoves(TeamColor teamColor)
     {
-        Collection<ChessMove> allEnemyMoves = new ArrayList<>();
+        Collection<ChessMove> allTeamMoves = new ArrayList<>();
 
-        var enemyPieces = board.getEnemies(teamColor);
+        var pieces = getBoard().getPieces(teamColor);
 
         for(int row=1;row<=8;row++)
             for(int col=1;col<=8;col++)
             {
-                if(enemyPieces[row-1][col-1]!=null)allEnemyMoves.addAll(validMoves(new ChessPosition(row,col)));
+                if(pieces[row-1][col-1]!=null)allTeamMoves.addAll(getBoard().getPiece(new ChessPosition(row,col)).pieceMoves(getBoard(),new ChessPosition(row,col)));
             }
-        return allEnemyMoves;
+        return allTeamMoves;
     }
 
 
