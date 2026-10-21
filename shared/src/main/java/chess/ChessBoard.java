@@ -1,7 +1,6 @@
 package chess;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -72,29 +71,29 @@ public class ChessBoard
         squares[position.getRow()-1][position.getColumn()-1]=null;
     }
 
-    public ChessPosition getKing(ChessGame.TeamColor TeamColor) throws InvalidMoveException
+    public ChessPosition getKing(ChessGame.TeamColor teamColor) throws InvalidMoveException
     {
         for (int row=0;row<8;row++)
             for(int col=0;col<8;col++)
             {
                 var piece=squares[row][col];
-                if(piece!=null && piece.getPieceType() == ChessPiece.PieceType.KING&&piece.getTeamColor() == TeamColor)
+                if(piece!=null && piece.getPieceType() == ChessPiece.PieceType.KING&&piece.getTeamColor() == teamColor)
                     return new ChessPosition(row+1,col+1);
             }
         throw new InvalidMoveException("No King Found");
     }
 
-    public ChessPiece[][] getPieces(ChessGame.TeamColor TeamColor)
+    public ChessPiece[][] getPieces(ChessGame.TeamColor teamColor)
     {
-        if(TeamColor == ChessGame.TeamColor.WHITE)TeamColor = ChessGame.TeamColor.BLACK;
-        else TeamColor = ChessGame.TeamColor.WHITE;
+        if(teamColor == ChessGame.TeamColor.WHITE)teamColor = ChessGame.TeamColor.BLACK;
+        else teamColor = ChessGame.TeamColor.WHITE;
 
         ChessPiece[][] pieces = new ChessPiece[8][8];
         for (int row=0;row<8;row++)
             for(int col=0;col<8;col++)
             {
                 var piece=squares[row][col];
-                if(piece!=null && piece.getTeamColor() == TeamColor)pieces[row][col]=piece;
+                if(piece!=null && piece.getTeamColor() == teamColor)pieces[row][col]=piece;
             }
         return pieces;
     }
