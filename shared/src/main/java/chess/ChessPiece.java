@@ -215,7 +215,10 @@ public class ChessPiece
         }
     }
 
-    private static void whitePawnPromotionOptions(ChessPosition myPosition, int row, List<ChessMove> possibleMoves, ChessPosition attemptedPosition)
+    private static void whitePawnPromotionOptions(ChessPosition myPosition,
+                                                  int row,
+                                                  List<ChessMove> possibleMoves,
+                                                  ChessPosition attemptedPosition)
     {
         if (row == 8)
         {
@@ -230,7 +233,10 @@ public class ChessPiece
     }
 
 
-    private static void blackPawnPromotionOptions(ChessPosition myPosition, int row, List<ChessMove> possibleMoves, ChessPosition attemptedPosition)
+    private static void blackPawnPromotionOptions(ChessPosition myPosition,
+                                                  int row,
+                                                  List<ChessMove> possibleMoves,
+                                                  ChessPosition attemptedPosition)
     {
         if (row == 1)
         {
@@ -244,7 +250,10 @@ public class ChessPiece
         }
     }
 
-    private List<ChessMove> getKnightMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> possibleMoves)
+    private List<ChessMove> getKnightMoves(ChessBoard board,
+                                           ChessPosition myPosition,
+                                           ChessPiece piece,
+                                           List<ChessMove> possibleMoves)
     {
         int row = myPosition.getRow(), col = myPosition.getColumn();
 
@@ -284,7 +293,10 @@ public class ChessPiece
         return possibleMoves;
     }
 
-    private List<ChessMove> getKingMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece, List<ChessMove> possibleMoves)
+    private List<ChessMove> getKingMoves(ChessBoard board,
+                                         ChessPosition myPosition,
+                                         ChessPiece piece,
+                                         List<ChessMove> possibleMoves)
     {
         int row = myPosition.getRow(), col = myPosition.getColumn();
 
