@@ -31,16 +31,22 @@ public class ChessBoard
     }
 
     public ChessBoard()
-    {}
+    {
+    }
 
     public ChessBoard(ChessBoard other)
     {
-        for(int row=0;row<8;row++)
-            for(int col=0;col<8;col++)
+        for (int row = 0; row < 8; row++)
+        {
+            for (int col = 0; col < 8; col++)
             {
-                var oldPiece=other.getPiece(new ChessPosition(row+1,col+1));
-                if(oldPiece!=null)squares[row][col]=new ChessPiece(oldPiece.getTeamColor(),oldPiece.getPieceType());
+                var oldPiece = other.getPiece(new ChessPosition(row + 1, col + 1));
+                if (oldPiece != null)
+                {
+                    squares[row][col] = new ChessPiece(oldPiece.getTeamColor(), oldPiece.getPieceType());
+                }
             }
+        }
     }
 
     /**
@@ -68,33 +74,48 @@ public class ChessBoard
 
     public void removePiece(ChessPosition position)
     {
-        squares[position.getRow()-1][position.getColumn()-1]=null;
+        squares[position.getRow() - 1][position.getColumn() - 1] = null;
     }
 
-    public ChessPosition getKing(ChessGame.TeamColor teamColor) throws InvalidMoveException
+    public ChessPosition getKing(ChessGame.TeamColor teamColor) throws IllegalStateException
     {
-        for (int row=0;row<8;row++)
-            for(int col=0;col<8;col++)
+        for (int row = 0; row < 8; row++)
+        {
+            for (int col = 0; col < 8; col++)
             {
-                var piece=squares[row][col];
-                if(piece!=null && piece.getPieceType() == ChessPiece.PieceType.KING&&piece.getTeamColor() == teamColor)
-                    return new ChessPosition(row+1,col+1);
+                var piece = squares[row][col];
+                if (piece != null && piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == teamColor)
+                {
+                    return new ChessPosition(row + 1, col + 1);
+                }
             }
-        throw new InvalidMoveException("No King Found");
+        }
+        throw new IllegalStateException("No King Found");
     }
 
     public ChessPiece[][] getPieces(ChessGame.TeamColor teamColor)
     {
-        if(teamColor == ChessGame.TeamColor.WHITE)teamColor = ChessGame.TeamColor.BLACK;
-        else teamColor = ChessGame.TeamColor.WHITE;
+        if (teamColor == ChessGame.TeamColor.WHITE)
+        {
+            teamColor = ChessGame.TeamColor.BLACK;
+        }else
+        {
+            teamColor = ChessGame.TeamColor.WHITE;
+        }
 
         ChessPiece[][] pieces = new ChessPiece[8][8];
-        for (int row=0;row<8;row++)
-            for(int col=0;col<8;col++)
+        for (int row = 0; row < 8; row++)
+        {
+            for (int col = 0; col < 8; col++)
             {
-                var piece=squares[row][col];
-                if(piece!=null && piece.getTeamColor() == teamColor)pieces[row][col]=piece;
+                var piece = squares[row][col];
+                if (piece != null && piece.getTeamColor() == teamColor)
+                {
+                    pieces[row][col] = piece;
+                }
             }
+        }
+
         return pieces;
     }
 
@@ -105,25 +126,23 @@ public class ChessBoard
     public void resetBoard()
     {
         squares = new ChessPiece[8][8];
-        addPiece(new ChessPosition(1, 1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
-        addPiece(new ChessPosition(1, 2), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
-        addPiece(new ChessPosition(1, 3), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
-        addPiece(new ChessPosition(1, 4), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN));
-        addPiece(new ChessPosition(1, 5), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING));
-        addPiece(new ChessPosition(1, 6), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
-        addPiece(new ChessPosition(1, 7), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
-        addPiece(new ChessPosition(1, 8), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
 
-        addPiece(new ChessPosition(8, 1), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
-        addPiece(new ChessPosition(8, 2), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
-        addPiece(new ChessPosition(8, 3), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
-        addPiece(new ChessPosition(8, 4), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN));
-        addPiece(new ChessPosition(8, 5), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
-        addPiece(new ChessPosition(8, 6), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
-        addPiece(new ChessPosition(8, 7), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
-        addPiece(new ChessPosition(8, 8), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
+        var teamColor = ChessGame.TeamColor.WHITE;
 
-        for(int i = 1;i<=8;i++)
+        for(int i=1;i<=8;i*=8)
+        {
+            addPiece(new ChessPosition(i, 1), new ChessPiece(teamColor, ChessPiece.PieceType.ROOK));
+            addPiece(new ChessPosition(i, 2), new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT));
+            addPiece(new ChessPosition(i, 3), new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP));
+            addPiece(new ChessPosition(i, 4), new ChessPiece(teamColor, ChessPiece.PieceType.QUEEN));
+            addPiece(new ChessPosition(i, 5), new ChessPiece(teamColor, ChessPiece.PieceType.KING));
+            addPiece(new ChessPosition(i, 6), new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP));
+            addPiece(new ChessPosition(i, 7), new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT));
+            addPiece(new ChessPosition(i, 8), new ChessPiece(teamColor, ChessPiece.PieceType.ROOK));
+            teamColor = ChessGame.TeamColor.BLACK;
+        }
+
+        for (int i = 1; i <= 8; i++)
         {
             addPiece(new ChessPosition(2, i), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
             addPiece(new ChessPosition(7, i), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
@@ -142,36 +161,8 @@ public class ChessBoard
             for (int k = 0; k < 8; k++)
             {
                 result.append("[");
-                if (squares[i][k] != null)
-                {
-                    if (squares[i][k].getTeamColor() == ChessGame.TeamColor.WHITE)
-                    {
-                        switch (squares[i][k].getPieceType())
-                        {
-                            case ChessPiece.PieceType.KING -> result.append("k");
-                            case ChessPiece.PieceType.QUEEN -> result.append("q");
-                            case ChessPiece.PieceType.KNIGHT -> result.append("n");
-                            case ChessPiece.PieceType.ROOK -> result.append("r");
-                            case ChessPiece.PieceType.BISHOP -> result.append("b");
-                            case ChessPiece.PieceType.PAWN -> result.append("p");
-                        }
-                    } else
-                    {
-                        switch (squares[i][k].getPieceType())
-                        {
-                            case ChessPiece.PieceType.KING -> result.append("K");
-                            case ChessPiece.PieceType.QUEEN -> result.append("Q");
-                            case ChessPiece.PieceType.KNIGHT -> result.append("N");
-                            case ChessPiece.PieceType.ROOK -> result.append("R");
-                            case ChessPiece.PieceType.BISHOP -> result.append("B");
-                            case ChessPiece.PieceType.PAWN -> result.append("P");
-                        }
-                    }
 
-                } else
-                {
-                    result.append(" ");
-                }
+                symbolFor(i, k, result);
 
                 result.append("]");
             }
@@ -179,5 +170,31 @@ public class ChessBoard
         }
 
         return "" + result;
+    }
+
+    private void symbolFor(int i, int k, StringBuilder result)
+    {
+        if (squares[i][k] != null)
+        {
+            switch (squares[i][k].getPieceType())
+            {
+                case ChessPiece.PieceType.KING -> result.append("k");
+                case ChessPiece.PieceType.QUEEN -> result.append("q");
+                case ChessPiece.PieceType.KNIGHT -> result.append("n");
+                case ChessPiece.PieceType.ROOK -> result.append("r");
+                case ChessPiece.PieceType.BISHOP -> result.append("b");
+                case ChessPiece.PieceType.PAWN -> result.append("p");
+            }
+
+            if(squares[i][k].getTeamColor() == ChessGame.TeamColor.BLACK)
+            {
+                int last = result.length()-1;
+                result.setCharAt(last, Character.toUpperCase(result.charAt(last)));
+            }
+
+        } else
+        {
+            result.append(" ");
+        }
     }
 }

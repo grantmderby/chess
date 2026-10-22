@@ -116,7 +116,7 @@ public class ChessPiece
             return getPawnMoves(board, myPosition, possibleMoves);
         }
 
-        return List.of();
+        return null;
     }
 
     private List<ChessMove> getPawnMoves(ChessBoard board, ChessPosition myPosition, List<ChessMove> possibleMoves)
