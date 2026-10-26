@@ -1,36 +1,42 @@
 package dataaccess;
 import model.*;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class AuthDao
 {
-    private ArrayList<AuthData> authList;
+    private Map<String, AuthData> authMap;
 
     public AuthDao()
     {
-        this.authList = new ArrayList<>();
+        this.authMap = new HashMap<>();
     }
 
     public AuthData getAuth(String authToken)
     {
-        if(authList.isEmpty())return null;
-        for(AuthData auth : authList)
-        {
-            if(Objects.equals(authToken, auth.authToken()))
-            {
-                return auth;
-            }
-        }
-        return null;
+        if(authMap.isEmpty())return null;
+        return authMap.get(authToken);
     }
 
-    public void createAuth(String authToken, String username) throws DataAccessException //raise exception user with username already exists
+    public void createAuth(AuthData auth)
     {
-        if(getAuth(authToken)==null)
-        {
-            authList.add(new AuthData(authToken, username));
-        }
-        else throw new DataAccessException("authToken already taken");
+        authMap.put(auth.authToken(),auth);
+    }
+
+    public void deleteAuth(AuthData auth)
+    {
+        authMap.remove(auth.authToken());
+    }
+
+    public void deleteAuth(String authToken)
+    {
+        authMap.remove(authToken);
+    }
+
+    public void clearAuths()
+    {
+        authMap.clear();
     }
 }

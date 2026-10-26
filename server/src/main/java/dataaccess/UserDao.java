@@ -1,7 +1,5 @@
 package dataaccess;
 import model.*;
-import java.util.ArrayList;
-import java.util.Objects;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,8 +12,6 @@ public class UserDao
     {
         this.chessUsers = new HashMap<>();
     }
-
-
 
     public void createUser(UserData user)
     {
@@ -42,10 +38,5 @@ public class UserDao
     {
         chessUsers.clear();
     }
-
-
-
-
-
 
 }
