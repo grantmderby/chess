@@ -12,7 +12,7 @@ public class GameDao
         this.games = new HashMap<>();
     }
 
-    public GameData getAuth(int gameID)
+    public GameData getGame(int gameID)
     {
         if(games.isEmpty())return null;
         return games.get(gameID);
@@ -23,17 +23,17 @@ public class GameDao
         games.put(game.gameId(),game);
     }
 
-    public void deleteAuth(GameData game)
+    public void deleteGame(GameData game)
     {
         games.remove(game.gameId());
     }
 
-    public void deleteAuth(int gameID)
+    public void deleteGame(int gameID)
     {
         games.remove(gameID);
     }
 
-    public void clearAuths()
+    public void clearGames()
     {
         games.clear();
     }
