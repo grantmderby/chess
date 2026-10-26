@@ -37,7 +37,7 @@ public class Server
     {
         clearService.clearUserData();
         System.out.println("Ran Delete");
-        ctx.result("200");
+        ctx.status(200);
     }
 
     public int run(int desiredPort)

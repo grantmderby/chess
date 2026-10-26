@@ -33,7 +33,7 @@ public class GameDao
         games.remove(gameID);
     }
 
-    public void clearGames()
+    public void clearGames() throws DataAccessException
     {
         games.clear();
     }
