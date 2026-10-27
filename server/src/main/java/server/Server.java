@@ -39,7 +39,9 @@ public class Server
 
 
         javalin.post("/user",this::registerHandler);
+        javalin.post("/session",this::loginHandler);
         javalin.delete("/db",this::clearDatabase);
+        javalin.delete("/session",this::logoutHandler);
 
 
         javalin.exception(BadRequestException.class,(e,ctx) -> exceptionHandler(e,400,ctx));
@@ -66,16 +68,32 @@ public class Server
     private void registerHandler(Context ctx) throws AlreadyTakenException
     {
         UserData newUser= new Gson().fromJson(ctx.body(),UserData.class);
-        ctx.status(200);
         var message = userService.registerUser(newUser);
         ctx.result(new Gson().toJson(message));
+        ctx.status(200);
+    }
+
+    private void loginHandler(Context ctx) throws UnauthorizedException
+    {
+        UserData newUser= new Gson().fromJson(ctx.body(),UserData.class);
+        var message = userService.loginUser(newUser);
+        ctx.result(new Gson().toJson(message));
+        ctx.status(200);
+    }
+
+    private void logoutHandler(Context ctx) throws UnauthorizedException
+    {
+        String authToken = ctx.header("authorization");
+        userService.logoutUser(authToken);
+        ctx.status(200);
+        ctx.result();
     }
 
     private void clearDatabase(Context ctx) throws DataAccessException
     {
         clearService.clearDatabase();
-        System.out.println("Ran Delete");
         ctx.status(200);
+        ctx.result();
     }
 
     private void exceptionHandler(Exception ex,int errorCode, Context ctx)

@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class AuthDao
 {
-    private Map<String, AuthData> authMap;
+    private final Map<String, AuthData> authMap;
 
     public AuthDao()
     {
@@ -18,6 +18,11 @@ public class AuthDao
     {
         if(authMap.isEmpty())return null;
         return authMap.get(authToken);
+    }
+
+    public boolean verifyAuth(String authToken)
+    {
+        return authMap.containsKey(authToken);
     }
 
     public void createAuth(AuthData auth)

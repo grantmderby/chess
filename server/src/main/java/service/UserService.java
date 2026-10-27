@@ -1,9 +1,11 @@
 package service;
 import dataaccess.*;
 import exception.AlreadyTakenException;
+import exception.UnauthorizedException;
 import model.*;
 import exception.DataAccessException;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class UserService
@@ -30,6 +32,33 @@ public class UserService
         }
     }
 
+    public AuthData loginUser(UserData user) throws UnauthorizedException
+    {
+        if(userDao.getUser(user.username())==null
+                || !Objects.equals(userDao.getUser(user.username()).password(), user.password()))
+        {
+            throw new UnauthorizedException("Username or Password is incorrect");
+        }
+        else
+        {
+            return createAuth(user.username());
+        }
+    }
+
+    public void logoutUser(String authToken) throws UnauthorizedException
+    {
+
+        if(!authDao.verifyAuth(authToken))
+        {
+            throw new UnauthorizedException("Unauthorized to perform this action");
+        }
+
+        else
+        {
+            authDao.deleteAuth(authToken);
+        }
+    }
+
     private AuthData createAuth(String username)
     {
         String token = UUID.randomUUID().toString();
@@ -37,7 +66,6 @@ public class UserService
         authDao.createAuth(authData);
         return authData;
     }
-
 
 
     public void clearUserData() throws DataAccessException
