@@ -14,25 +14,15 @@ public class UserDao
         this.chessUsers = new HashMap<>();
     }
 
-    public void createUser(UserData user)
+    public void createUser(UserData user) throws DataAccessException
     {
         chessUsers.put(user.username(),user);
     }
 
-    public UserData getUser(String username)
+    public UserData getUser(String username) throws DataAccessException
     {
         if(chessUsers.isEmpty())return null;
         return chessUsers.get(username);
-    }
-
-    public void deleteUser(UserData user)
-    {
-        chessUsers.remove(user.username());
-    }
-
-    public void deleteUser(String username)
-    {
-        chessUsers.remove(username);
     }
 
     public void clearUsers() throws DataAccessException

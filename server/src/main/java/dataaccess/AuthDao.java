@@ -20,22 +20,17 @@ public class AuthDao
         return authMap.get(authToken);
     }
 
-    public boolean verifyAuth(String authToken)
+    public boolean verifyAuth(String authToken) throws DataAccessException
     {
         return authMap.containsKey(authToken);
     }
 
-    public void createAuth(AuthData auth)
+    public void createAuth(AuthData auth) throws DataAccessException
     {
         authMap.put(auth.authToken(),auth);
     }
 
-    public void deleteAuth(AuthData auth)
-    {
-        authMap.remove(auth.authToken());
-    }
-
-    public void deleteAuth(String authToken)
+    public void deleteAuth(String authToken) throws DataAccessException
     {
         authMap.remove(authToken);
     }

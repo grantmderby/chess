@@ -18,7 +18,7 @@ public class Server
     ClearService clearService;
     UserService userService;
     //AuthService authService;
-    //GameService gameService;
+    GameService gameService;
 
 
     public Server()
@@ -34,13 +34,15 @@ public class Server
 
         this.userService = new UserService(userDao, authDao);
         //this.authService = new AuthService(userDao, authDao);
-        //this.gameService = new GameService(authDao, gameDao);
+        this.gameService = new GameService(authDao, gameDao);
         this.clearService = new ClearService(userDao, authDao, gameDao);
 
 
         javalin.post("/user",this::registerHandler);
         javalin.post("/session",this::loginHandler);
-        javalin.delete("/db",this::clearDatabase);
+        javalin.get("/game",this::listGamesHandler);
+        javalin.post("/game",this::createGameHandler);
+        javalin.delete("/db",this::clearDatabaseHandler);
         javalin.delete("/session",this::logoutHandler);
 
 
@@ -65,7 +67,7 @@ public class Server
         javalin.stop();
     }
 
-    private void registerHandler(Context ctx) throws AlreadyTakenException
+    private void registerHandler(Context ctx) throws AlreadyTakenException, DataAccessException
     {
         UserData newUser= new Gson().fromJson(ctx.body(),UserData.class);
         var message = userService.registerUser(newUser);
@@ -73,7 +75,7 @@ public class Server
         ctx.status(200);
     }
 
-    private void loginHandler(Context ctx) throws UnauthorizedException
+    private void loginHandler(Context ctx) throws UnauthorizedException, DataAccessException
     {
         UserData newUser= new Gson().fromJson(ctx.body(),UserData.class);
         var message = userService.loginUser(newUser);
@@ -81,7 +83,7 @@ public class Server
         ctx.status(200);
     }
 
-    private void logoutHandler(Context ctx) throws UnauthorizedException
+    private void logoutHandler(Context ctx) throws UnauthorizedException, DataAccessException
     {
         String authToken = ctx.header("authorization");
         userService.logoutUser(authToken);
@@ -89,7 +91,26 @@ public class Server
         ctx.result();
     }
 
-    private void clearDatabase(Context ctx) throws DataAccessException
+    private void listGamesHandler(Context ctx) throws UnauthorizedException, DataAccessException
+    {
+        String authToken = ctx.header("authorization");
+        var message = gameService.listGames(authToken);
+        ctx.result(new Gson().toJson(message));
+        ctx.status(200);
+    }
+
+    private void createGameHandler(Context ctx) throws UnauthorizedException, DataAccessException
+    {
+        String authToken = ctx.header("authorization");
+        record GameName(String gameName){}
+        String gameName = new Gson().fromJson(ctx.body(),GameName.class).gameName();
+        int gameID = gameService.createGame(authToken,gameName);
+        var message = Map.of("gameID", gameID);
+        ctx.result(new Gson().toJson(message));
+        ctx.status(200);
+    }
+
+    private void clearDatabaseHandler(Context ctx) throws DataAccessException
     {
         clearService.clearDatabase();
         ctx.status(200);

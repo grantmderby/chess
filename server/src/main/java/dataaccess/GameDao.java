@@ -1,50 +1,43 @@
 package dataaccess;
+import chess.ChessGame;
 import exception.DataAccessException;
 import model.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 public class GameDao
 {
     private Map<Integer, GameData> games;
+    private int nextGameID;
 
     public GameDao()
     {
-        this.games = new HashMap<>();
+        this.games = new LinkedHashMap<>();
+        this.nextGameID=1;
     }
 
 
-    public void createGame(GameData game)
+    public int createGame(String gameName) throws DataAccessException
     {
+        var game = new GameData(nextGameID++,"","",gameName, new ChessGame());
         games.put(game.gameId(),game);
+        return game.gameId();
     }
 
-    public GameData getGame(int gameID)
+    public GameData getGame(int gameID) throws DataAccessException
     {
         if(games.isEmpty())return null;
         return games.get(gameID);
     }
 
-    public List<GameData> listGames()
+    public List<GameData> listGames() throws DataAccessException
     {
         return new ArrayList<>(games.values());
     }
 
-    public void deleteGame(GameData game)
-    {
-        games.remove(game.gameId());
-    }
-
-    public void deleteGame(int gameID)
-    {
-        games.remove(gameID);
-    }
-
     public void clearGames() throws DataAccessException
     {
+        this.nextGameID = 1;
         games.clear();
     }
 }

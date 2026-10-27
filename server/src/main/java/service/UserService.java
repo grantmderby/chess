@@ -19,7 +19,7 @@ public class UserService
         this.authDao=authDao;
     }
 
-    public AuthData registerUser(UserData user) throws AlreadyTakenException
+    public AuthData registerUser(UserData user) throws AlreadyTakenException, DataAccessException
     {
         if(userDao.getUser(user.username())!=null)
         {
@@ -32,7 +32,7 @@ public class UserService
         }
     }
 
-    public AuthData loginUser(UserData user) throws UnauthorizedException
+    public AuthData loginUser(UserData user) throws UnauthorizedException, DataAccessException
     {
         if(userDao.getUser(user.username())==null
                 || !Objects.equals(userDao.getUser(user.username()).password(), user.password()))
@@ -45,9 +45,8 @@ public class UserService
         }
     }
 
-    public void logoutUser(String authToken) throws UnauthorizedException
+    public void logoutUser(String authToken) throws UnauthorizedException, DataAccessException
     {
-
         if(!authDao.verifyAuth(authToken))
         {
             throw new UnauthorizedException("Unauthorized to perform this action");
@@ -59,7 +58,7 @@ public class UserService
         }
     }
 
-    private AuthData createAuth(String username)
+    private AuthData createAuth(String username) throws DataAccessException
     {
         String token = UUID.randomUUID().toString();
         var authData = new AuthData(username,token);
