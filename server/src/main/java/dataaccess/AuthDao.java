@@ -1,4 +1,5 @@
 package dataaccess;
+import exception.DataAccessException;
 import model.*;
 import java.util.Map;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ public class AuthDao
         authMap.remove(authToken);
     }
 
-    public void clearAuths()
+    public void clearAuths() throws DataAccessException
     {
         authMap.clear();
     }

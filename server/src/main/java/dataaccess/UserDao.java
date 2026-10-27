@@ -1,4 +1,5 @@
 package dataaccess;
+import exception.DataAccessException;
 import model.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class UserDao
         chessUsers.remove(username);
     }
 
-    public void clearUsers()
+    public void clearUsers() throws DataAccessException
     {
         chessUsers.clear();
     }

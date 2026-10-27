@@ -8,6 +8,7 @@ import io.javalin.http.Context;
 import exception.*;
 import service.*;
 import dataaccess.*;
+import model.*;
 
 
 public class Server
@@ -15,6 +16,9 @@ public class Server
 
     private final Javalin javalin;
     ClearService clearService;
+    UserService userService;
+    //AuthService authService;
+    //GameService gameService;
 
 
     public Server()
@@ -27,9 +31,14 @@ public class Server
         AuthDao authDao = new AuthDao();
         GameDao gameDao = new GameDao();
 
+
+        this.userService = new UserService(userDao, authDao);
+        //this.authService = new AuthService(userDao, authDao);
+        //this.gameService = new GameService(authDao, gameDao);
         this.clearService = new ClearService(userDao, authDao, gameDao);
 
-        //javalin.post("")
+
+        javalin.post("/user",this::registerHandler);
         javalin.delete("/db",this::clearDatabase);
 
 
@@ -54,9 +63,17 @@ public class Server
         javalin.stop();
     }
 
+    private void registerHandler(Context ctx) throws AlreadyTakenException
+    {
+        UserData newUser= new Gson().fromJson(ctx.body(),UserData.class);
+        ctx.status(200);
+        var message = userService.registerUser(newUser);
+        ctx.result(new Gson().toJson(message));
+    }
+
     private void clearDatabase(Context ctx) throws DataAccessException
     {
-        clearService.clearUserData();
+        clearService.clearDatabase();
         System.out.println("Ran Delete");
         ctx.status(200);
     }

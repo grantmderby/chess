@@ -15,7 +15,7 @@ public class ClearService
         this.gameDao=gameDao;
     }
 
-    public void clearUserData() throws DataAccessException
+    public void clearDatabase() throws DataAccessException
     {
         userDao.clearUsers();
         authDao.clearAuths();
