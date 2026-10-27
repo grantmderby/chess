@@ -40,8 +40,9 @@ public class Server
 
         javalin.post("/user",this::registerHandler);
         javalin.post("/session",this::loginHandler);
-        javalin.get("/game",this::listGamesHandler);
         javalin.post("/game",this::createGameHandler);
+        javalin.get("/game",this::listGamesHandler);
+        javalin.put("/game",this::joinGameHandler);
         javalin.delete("/db",this::clearDatabaseHandler);
         javalin.delete("/session",this::logoutHandler);
 
@@ -107,6 +108,15 @@ public class Server
         int gameID = gameService.createGame(authToken,gameName);
         var message = Map.of("gameID", gameID);
         ctx.result(new Gson().toJson(message));
+        ctx.status(200);
+    }
+
+    private void joinGameHandler(Context ctx) throws UnauthorizedException, DataAccessException, BadRequestException
+    {
+        String authToken = ctx.header("authorization");
+        record JoinGame(String playerColor, int gameID){}
+        var joinGame = new Gson().fromJson(ctx.body(),JoinGame.class);
+        gameService.joinGame(authToken,joinGame.playerColor, joinGame.gameID);
         ctx.status(200);
     }
 

@@ -1,6 +1,6 @@
 package dataaccess;
 import chess.ChessGame;
-import exception.DataAccessException;
+import exception.*;
 import model.*;
 
 import java.util.*;
@@ -24,9 +24,17 @@ public class GameDao
         return game.gameId();
     }
 
-    public GameData getGame(int gameID) throws DataAccessException
+    public void updateGame(GameData game) throws DataAccessException
     {
-        if(games.isEmpty())return null;
+        games.put(game.gameId(),game);
+    }
+
+    public GameData getGame(int gameID) throws DataAccessException, BadRequestException
+    {
+        if(games.isEmpty()||gameID>=nextGameID)
+        {
+            throw new BadRequestException("Game does not exist");
+        }
         return games.get(gameID);
     }
 
