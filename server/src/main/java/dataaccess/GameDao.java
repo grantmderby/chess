@@ -1,9 +1,10 @@
 package dataaccess;
+
+import java.util.*;
+
 import chess.ChessGame;
 import exception.*;
 import model.*;
-
-import java.util.*;
 
 public class GameDao
 {
@@ -19,7 +20,7 @@ public class GameDao
 
     public int createGame(String gameName) throws DataAccessException
     {
-        var game = new GameData(nextGameID++,"","",gameName, new ChessGame());
+        var game = new GameData(nextGameID++,null,null,gameName, new ChessGame());
         games.put(game.gameId(),game);
         return game.gameId();
     }
@@ -31,7 +32,13 @@ public class GameDao
 
     public GameData getGame(int gameID) throws DataAccessException, BadRequestException
     {
-        if(games.isEmpty()||gameID>=nextGameID)
+        if(games.isEmpty())
+        {
+            throw new BadRequestException("Game does not exist");
+        }
+
+        var game = games.get(gameID);
+        if(game==null)
         {
             throw new BadRequestException("Game does not exist");
         }

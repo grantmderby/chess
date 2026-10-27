@@ -9,6 +9,8 @@ import exception.*;
 import service.*;
 import dataaccess.*;
 import model.*;
+import request.*;
+import response.*;
 
 
 public class Server
@@ -68,7 +70,7 @@ public class Server
         javalin.stop();
     }
 
-    private void registerHandler(Context ctx) throws AlreadyTakenException, DataAccessException
+    private void registerHandler(Context ctx) throws AlreadyTakenException, DataAccessException, BadRequestException
     {
         UserData newUser= new Gson().fromJson(ctx.body(),UserData.class);
         var message = userService.registerUser(newUser);
@@ -76,7 +78,7 @@ public class Server
         ctx.status(200);
     }
 
-    private void loginHandler(Context ctx) throws UnauthorizedException, DataAccessException
+    private void loginHandler(Context ctx) throws UnauthorizedException, DataAccessException, BadRequestException
     {
         UserData newUser= new Gson().fromJson(ctx.body(),UserData.class);
         var message = userService.loginUser(newUser);
@@ -95,12 +97,12 @@ public class Server
     private void listGamesHandler(Context ctx) throws UnauthorizedException, DataAccessException
     {
         String authToken = ctx.header("authorization");
-        var message = gameService.listGames(authToken);
-        ctx.result(new Gson().toJson(message));
+        var gameInfo = gameService.listGames(authToken);
+        ctx.result(new Gson().toJson(new ListResult(gameInfo)));
         ctx.status(200);
     }
 
-    private void createGameHandler(Context ctx) throws UnauthorizedException, DataAccessException
+    private void createGameHandler(Context ctx) throws UnauthorizedException, DataAccessException, BadRequestException
     {
         String authToken = ctx.header("authorization");
         record GameName(String gameName){}
@@ -111,12 +113,11 @@ public class Server
         ctx.status(200);
     }
 
-    private void joinGameHandler(Context ctx) throws UnauthorizedException, DataAccessException, BadRequestException
+    private void joinGameHandler(Context ctx) throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException
     {
         String authToken = ctx.header("authorization");
-        record JoinGame(String playerColor, int gameID){}
         var joinGame = new Gson().fromJson(ctx.body(),JoinGame.class);
-        gameService.joinGame(authToken,joinGame.playerColor, joinGame.gameID);
+        gameService.joinGame(authToken,joinGame.playerColor(), joinGame.gameID());
         ctx.status(200);
     }
 

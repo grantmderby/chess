@@ -1,8 +1,10 @@
 package dataaccess;
-import exception.DataAccessException;
-import model.*;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import exception.DataAccessException;
+import model.*;
 
 public class UserDao
 {

@@ -1,12 +1,11 @@
 package service;
-import dataaccess.*;
-import exception.AlreadyTakenException;
-import exception.UnauthorizedException;
-import model.*;
-import exception.DataAccessException;
 
 import java.util.Objects;
 import java.util.UUID;
+
+import dataaccess.*;
+import model.*;
+import exception.*;
 
 public class UserService
 {
@@ -19,8 +18,12 @@ public class UserService
         this.authDao=authDao;
     }
 
-    public AuthData registerUser(UserData user) throws AlreadyTakenException, DataAccessException
+    public AuthData registerUser(UserData user) throws AlreadyTakenException, DataAccessException, BadRequestException
     {
+        if(user.username()==null||user.password()==null||user.email()==null)
+        {
+            throw new BadRequestException("The username, password, and/or email was not included");
+        }
         if(userDao.getUser(user.username())!=null)
         {
             throw new AlreadyTakenException("This username already in use");
@@ -32,8 +35,12 @@ public class UserService
         }
     }
 
-    public AuthData loginUser(UserData user) throws UnauthorizedException, DataAccessException
+    public AuthData loginUser(UserData user) throws UnauthorizedException, DataAccessException, BadRequestException
     {
+        if(user.username()==null||user.password()==null)
+        {
+            throw new BadRequestException("The username and/or password was not included");
+        }
         if(userDao.getUser(user.username())==null
                 || !Objects.equals(userDao.getUser(user.username()).password(), user.password()))
         {

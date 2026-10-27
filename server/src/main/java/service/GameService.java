@@ -1,18 +1,18 @@
 package service;
-import dataaccess.*;
-import exception.BadRequestException;
-import exception.UnauthorizedException;
-import model.*;
-import exception.DataAccessException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import dataaccess.*;
+import exception.*;
+import model.*;
+import response.*;
+
+
 
 public class GameService
 {
-    public record GameInfo(int gameID, String whiteUsername, String blackUsername, String gameName){}
 
     GameDao gameDao;
     AuthDao authDao;
@@ -31,7 +31,6 @@ public class GameService
             throw new UnauthorizedException("Unauthorized to perform this action");
         }
 
-
         List<GameInfo> gameInfo = new ArrayList<>();
         var gameList = gameDao.listGames();
 
@@ -43,8 +42,12 @@ public class GameService
         return gameInfo;
     }
 
-    public int createGame(String authToken, String gameName) throws UnauthorizedException, DataAccessException
+    public int createGame(String authToken, String gameName) throws UnauthorizedException, DataAccessException, BadRequestException
     {
+        if(gameName==null)
+        {
+            throw new BadRequestException("Game name was not included in request");
+        }
         if(!authDao.verifyAuth(authToken))
         {
             throw new UnauthorizedException("Unauthorized to perform this action");
@@ -53,7 +56,7 @@ public class GameService
         return gameDao.createGame(gameName);
     }
 
-    public void joinGame(String authToken, String playerColor, int gameID) throws DataAccessException, UnauthorizedException, BadRequestException
+    public void joinGame(String authToken, String playerColor, int gameID) throws DataAccessException, UnauthorizedException, BadRequestException, AlreadyTakenException
     {
         if(!authDao.verifyAuth(authToken))
         {
@@ -64,22 +67,22 @@ public class GameService
 
         if(Objects.equals(playerColor, "WHITE"))
         {
-            if(Objects.equals(game.whiteUsername(),""))
+            if(game.whiteUsername()==null)
             {
                 var newGame = new GameData(game.gameId(),authDao.getAuth(authToken).username(),game.blackUsername(),game.gameName(),game.game());
                 gameDao.updateGame(newGame);
             }
-            else throw new UnauthorizedException("This player slot is already taken");
+            else throw new AlreadyTakenException("This player slot is already taken");
         }
 
         else if(Objects.equals(playerColor, "BLACK"))
         {
-            if(Objects.equals(game.blackUsername(),""))
+            if(game.blackUsername()==null)
             {
                 var newGame = new GameData(game.gameId(),game.whiteUsername(),authDao.getAuth(authToken).username(),game.gameName(),game.game());
                 gameDao.updateGame(newGame);
             }
-            else throw new UnauthorizedException("This player slot is already taken");
+            else throw new AlreadyTakenException("This player slot is already taken");
         }
         else throw new BadRequestException("Did not provide a valid player color");
 
