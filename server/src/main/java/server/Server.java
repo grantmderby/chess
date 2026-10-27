@@ -1,10 +1,14 @@
 package server;
 
-import dataaccess.DataAccessException;
+import com.google.gson.Gson;
+import java.util.Map;
 import io.javalin.*;
 import io.javalin.http.Context;
+
+import exception.*;
 import service.*;
 import dataaccess.*;
+
 
 public class Server
 {
@@ -15,9 +19,6 @@ public class Server
 
     public Server()
     {
-
-
-
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
@@ -31,14 +32,16 @@ public class Server
         //javalin.post("")
         javalin.delete("/db",this::clearDatabase);
 
+
+        javalin.exception(BadRequestException.class,(e,ctx) -> exceptionHandler(e,400,ctx));
+        javalin.exception(UnauthorizedException.class,(e,ctx) -> exceptionHandler(e,401,ctx));
+        javalin.exception(AlreadyTakenException.class,(e,ctx) -> exceptionHandler(e,403,ctx));
+        javalin.exception(DataAccessException.class,(e,ctx) -> exceptionHandler(e,500,ctx));
     }
 
-    private void clearDatabase(Context ctx) throws DataAccessException
-    {
-        clearService.clearUserData();
-        System.out.println("Ran Delete");
-        ctx.status(200);
-    }
+
+
+
 
     public int run(int desiredPort)
     {
@@ -51,4 +54,17 @@ public class Server
         javalin.stop();
     }
 
+    private void clearDatabase(Context ctx) throws DataAccessException
+    {
+        clearService.clearUserData();
+        System.out.println("Ran Delete");
+        ctx.status(200);
+    }
+
+    private void exceptionHandler(Exception ex,int errorCode, Context ctx)
+    {
+        ctx.status(errorCode);
+        var message = Map.of("message","Error: " + ex.getMessage());
+        ctx.result(new Gson().toJson(message));
+    }
 }
