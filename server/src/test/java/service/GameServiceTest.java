@@ -25,9 +25,9 @@ class GameServiceTest
     @BeforeEach
     void setUp()
     {
-        gameDao = new GameDao();
-        UserDao userDao = new UserDao();
-        AuthDao authDao = new AuthDao();
+        gameDao = new MemoryGameDao();
+        UserDao userDao = new MemoryUserDao();
+        AuthDao authDao = new MemoryAuthDao();
 
         clearService = new ClearService(userDao, authDao, gameDao);
         userService = new UserService(userDao, authDao);

@@ -1,58 +1,20 @@
 package dataaccess;
 
-import java.util.*;
+import exception.BadRequestException;
+import exception.DataAccessException;
+import model.GameData;
 
-import chess.ChessGame;
-import exception.*;
-import model.*;
+import java.util.List;
 
-public class GameDao
+public interface GameDao
 {
-    private Map<Integer, GameData> games;
-    private int nextGameID;
+    int createGame(String gameName) throws DataAccessException;
 
-    public GameDao()
-    {
-        this.games = new LinkedHashMap<>();
-        this.nextGameID=1;
-    }
+    void updateGame(GameData game) throws DataAccessException;
 
+    GameData getGame(int gameID) throws DataAccessException, BadRequestException;
 
-    public int createGame(String gameName) throws DataAccessException
-    {
-        var game = new GameData(nextGameID++,null,null,gameName, new ChessGame());
-        games.put(game.gameId(),game);
-        return game.gameId();
-    }
+    List<GameData> listGames() throws DataAccessException;
 
-    public void updateGame(GameData game) throws DataAccessException
-    {
-        games.put(game.gameId(),game);
-    }
-
-    public GameData getGame(int gameID) throws DataAccessException, BadRequestException
-    {
-        if(games.isEmpty())
-        {
-            throw new BadRequestException("Game does not exist");
-        }
-
-        var game = games.get(gameID);
-        if(game==null)
-        {
-            throw new BadRequestException("Game does not exist");
-        }
-        return games.get(gameID);
-    }
-
-    public List<GameData> listGames() throws DataAccessException
-    {
-        return new ArrayList<>(games.values());
-    }
-
-    public void clearGames() throws DataAccessException
-    {
-        this.nextGameID = 1;
-        games.clear();
-    }
+    void clearGames() throws DataAccessException;
 }

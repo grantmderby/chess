@@ -14,8 +14,8 @@ public class UserService
 
     public UserService(UserDao userDao, AuthDao authDao)
     {
-        this.userDao=userDao;
-        this.authDao=authDao;
+        this.userDao = userDao;
+        this.authDao = authDao;
     }
 
     public AuthData registerUser(UserData user) throws AlreadyTakenException, DataAccessException, BadRequestException

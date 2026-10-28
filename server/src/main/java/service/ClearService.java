@@ -11,9 +11,9 @@ public class ClearService
 
     public ClearService(UserDao userDao, AuthDao authDao, GameDao gameDao)
     {
-        this.userDao=userDao;
-        this.authDao=authDao;
-        this.gameDao=gameDao;
+        this.userDao = userDao;
+        this.authDao = authDao;
+        this.gameDao = gameDao;
     }
 
     public void clearDatabase() throws DataAccessException
