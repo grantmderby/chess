@@ -18,18 +18,21 @@ public class AuthDao
 
     public AuthData getAuth(String authToken)
     {
-        if(authMap.isEmpty())return null;
+        if (authMap.isEmpty())
+        {
+            return null;
+        }
         return authMap.get(authToken);
     }
 
     public boolean verifyAuth(String authToken) throws DataAccessException
     {
-        return authMap.containsKey(authToken);
+        return !authMap.containsKey(authToken);
     }
 
     public void createAuth(AuthData auth) throws DataAccessException
     {
-        authMap.put(auth.authToken(),auth);
+        authMap.put(auth.authToken(), auth);
     }
 
     public void deleteAuth(String authToken) throws DataAccessException

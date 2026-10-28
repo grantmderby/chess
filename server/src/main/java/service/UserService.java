@@ -54,7 +54,7 @@ public class UserService
 
     public void logoutUser(String authToken) throws UnauthorizedException, DataAccessException
     {
-        if(!authDao.verifyAuth(authToken))
+        if(authDao.verifyAuth(authToken))
         {
             throw new UnauthorizedException("Unauthorized to perform this action");
         }
@@ -73,9 +73,4 @@ public class UserService
         return authData;
     }
 
-
-    public void clearUserData() throws DataAccessException
-    {
-        userDao.clearUsers();
-    }
 }

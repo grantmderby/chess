@@ -8,7 +8,7 @@ import model.*;
 
 public class UserDao
 {
-    private Map<String,UserData> chessUsers;
+    private Map<String, UserData> chessUsers;
 
 
     public UserDao()
@@ -18,12 +18,15 @@ public class UserDao
 
     public void createUser(UserData user) throws DataAccessException
     {
-        chessUsers.put(user.username(),user);
+        chessUsers.put(user.username(), user);
     }
 
     public UserData getUser(String username) throws DataAccessException
     {
-        if(chessUsers.isEmpty())return null;
+        if (chessUsers.isEmpty())
+        {
+            return null;
+        }
         return chessUsers.get(username);
     }
 

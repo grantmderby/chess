@@ -26,12 +26,12 @@ class GameServiceTest
     void setUp()
     {
         gameDao = new GameDao();
-        AuthDao authDao = new AuthDao();
         UserDao userDao = new UserDao();
+        AuthDao authDao = new AuthDao();
 
         clearService = new ClearService(userDao, authDao, gameDao);
-        gameService = new GameService(authDao, gameDao);
         userService = new UserService(userDao, authDao);
+        gameService = new GameService(authDao, gameDao);
     }
 
     @AfterEach

@@ -160,13 +160,15 @@ public class ChessPiece
         }
         col--;
         attemptedPosition = new ChessPosition(row, col);
-        if (row >= 1 && col >= 1 && board.getPiece(attemptedPosition) != null && board.getPiece(attemptedPosition).pieceColor != ChessGame.TeamColor.BLACK)
+        if (row >= 1 && col >= 1 && board.getPiece(attemptedPosition)
+                != null && board.getPiece(attemptedPosition).pieceColor != ChessGame.TeamColor.BLACK)
         {
             blackPawnPromotionOptions(myPosition, row, possibleMoves, attemptedPosition);
         }
         col += 2;
         attemptedPosition = new ChessPosition(row, col);
-        if (row >= 1 && col <= 8 && board.getPiece(attemptedPosition) != null && board.getPiece(attemptedPosition).pieceColor != ChessGame.TeamColor.BLACK)
+        if (row >= 1 && col <= 8 && board.getPiece(attemptedPosition)
+                != null && board.getPiece(attemptedPosition).pieceColor != ChessGame.TeamColor.BLACK)
         {
             blackPawnPromotionOptions(myPosition, row, possibleMoves, attemptedPosition);
         }
@@ -201,7 +203,9 @@ public class ChessPiece
         col--;
         attemptedPosition = new ChessPosition(row, col);
 
-        if (row <= 8 && col >= 1 && board.getPiece(attemptedPosition) != null && board.getPiece(attemptedPosition).pieceColor != ChessGame.TeamColor.WHITE)
+        if (row <= 8 && col >= 1 && board.getPiece(attemptedPosition)
+                != null && board.getPiece(attemptedPosition).pieceColor
+                != ChessGame.TeamColor.WHITE)
         {
             whitePawnPromotionOptions(myPosition, row, possibleMoves, attemptedPosition);
         }
@@ -209,7 +213,9 @@ public class ChessPiece
         col += 2;
         attemptedPosition = new ChessPosition(row, col);
 
-        if (row <= 8 && col <= 8 && board.getPiece(attemptedPosition) != null && board.getPiece(attemptedPosition).pieceColor != ChessGame.TeamColor.WHITE)
+        if (row <= 8 && col <= 8 && board.getPiece(attemptedPosition)
+                != null && board.getPiece(attemptedPosition).pieceColor
+                != ChessGame.TeamColor.WHITE)
         {
             whitePawnPromotionOptions(myPosition, row, possibleMoves, attemptedPosition);
         }
