@@ -20,7 +20,6 @@ class MySQLAuthDaoTest
         try
         {
             DatabaseManager.createDatabase();
-            //SQLAuthDao = new MySQLAuthDao();
             this.SQLAuthDao = new MySQLAuthDao();
         }catch (DataAccessException e)
         {

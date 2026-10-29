@@ -18,7 +18,7 @@ public class MySQLAuthDao implements AuthDao
             configureDatabase();
         }catch (DataAccessException ex)
         {
-            throw new RuntimeException(String.format("Error: Table failed to be added, cannot continue. Error: %s",ex.getMessage()));
+            throw new RuntimeException(String.format("Error: AuthTable failed to be added, cannot continue. Error: %s",ex.getMessage()));
         }
 
     }
@@ -43,7 +43,8 @@ public class MySQLAuthDao implements AuthDao
 
     public void clearAuths() throws DataAccessException
     {
-        clearAuthHelper();
+        String statement = "TRUNCATE TABLE AuthData";
+        clearAuthHelper(statement);
     }
 
     private void createAuthHelper(String sqlStatement, AuthData auth) throws DataAccessException
@@ -106,9 +107,8 @@ public class MySQLAuthDao implements AuthDao
         }
     }
 
-    private void clearAuthHelper() throws DataAccessException
+    private void clearAuthHelper(String sqlStatement) throws DataAccessException
     {
-        String sqlStatement = "TRUNCATE TABLE AuthData";
         try(Connection databaseConnection = DatabaseManager.getConnection();)
         {
             try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatement))
