@@ -4,28 +4,22 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.HashMap;
-
-import com.google.gson.Gson;
 import exception.DataAccessException;
 import model.*;
 
 
 public class MySQLAuthDao implements AuthDao
 {
-    private final Map<String, AuthData> authMap;
 
     public MySQLAuthDao() throws DataAccessException
     {
-        this.authMap = new HashMap<>();
         configureDatabase();
     }
 
     public void createAuth(AuthData auth) throws DataAccessException
     {
         var statement = "INSERT INTO AuthData (authToken, username) VALUES (?,?)";
-        executeUpdate(statement, auth);
+        createAuthHelper(statement, auth);
     }
 
    public AuthData getAuth(String authToken) throws DataAccessException
@@ -34,42 +28,34 @@ public class MySQLAuthDao implements AuthDao
         return getAuthHelper(statement,authToken);
     }
 
-    public boolean verifyAuth(String authToken) throws DataAccessException
-    {
-        return !authMap.containsKey(authToken);
-    }
-
     public void deleteAuth(String authToken) throws DataAccessException
     {
-        authMap.remove(authToken);
+        var statement = "DELETE FROM AuthData WHERE authToken = ?";
+        deleteAuthHelper(statement, authToken);
     }
 
     public void clearAuths() throws DataAccessException
     {
-        String sqlStatement = "DROP TABLE IF EXISTS AuthData";
-        try(Connection databaseConnection = DatabaseManager.getConnection();)
+        clearAuthHelper();
+    }
+
+    private void createAuthHelper(String sqlStatement, AuthData auth) throws DataAccessException
+    {
+        try(Connection databaseConnection = DatabaseManager.getConnection())
         {
             try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatement))
             {
+                preparedStatement.setString(1,auth.authToken());
+                preparedStatement.setString(2,auth.username());
                 preparedStatement.executeUpdate();
             }
-        } catch(SQLException | DataAccessException sqlError)
+        }
+        catch (SQLException sqlError)
         {
             String errorMessage = String.format("Unable to update database: %s, %s",sqlStatement,sqlError.getMessage());
             throw new DataAccessException(errorMessage);
         }
     }
-
-
-
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS AuthData (
-               authToken VARCHAR(100) PRIMARY KEY,
-               username VARCHAR(100) NOT NULL
-             );
-            """
-    };
 
     private AuthData getAuthHelper(String sqlStatement, String authToken) throws DataAccessException
     {
@@ -96,23 +82,47 @@ public class MySQLAuthDao implements AuthDao
         return null;
     }
 
-    private void executeUpdate(String sqlStatement, AuthData auth) throws DataAccessException
+    private void deleteAuthHelper(String sqlStatement, String authToken) throws DataAccessException
     {
         try(Connection databaseConnection = DatabaseManager.getConnection())
         {
+
             try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatement))
             {
-                preparedStatement.setString(1,auth.authToken());
-                preparedStatement.setString(2,auth.username());
+                preparedStatement.setString(1,authToken);
                 preparedStatement.executeUpdate();
             }
-        }
-        catch (SQLException sqlError)
+        } catch(SQLException sqlError)
         {
             String errorMessage = String.format("Unable to update database: %s, %s",sqlStatement,sqlError.getMessage());
             throw new DataAccessException(errorMessage);
         }
     }
+
+    private void clearAuthHelper() throws DataAccessException
+    {
+        String sqlStatement = "DROP TABLE IF EXISTS AuthData";
+        try(Connection databaseConnection = DatabaseManager.getConnection();)
+        {
+            try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatement))
+            {
+                preparedStatement.executeUpdate();
+            }
+        } catch(SQLException | DataAccessException sqlError)
+        {
+            String errorMessage = String.format("Unable to update database: %s, %s",sqlStatement,sqlError.getMessage());
+            throw new DataAccessException(errorMessage);
+        }
+    }
+
+    private final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS AuthData (
+               authToken VARCHAR(100) PRIMARY KEY,
+               username VARCHAR(100) NOT NULL
+             );
+            """
+    };
 
     private void configureDatabase() throws DataAccessException
     {
