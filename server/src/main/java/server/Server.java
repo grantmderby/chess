@@ -12,6 +12,8 @@ import model.*;
 import request.*;
 import response.*;
 
+import javax.xml.crypto.Data;
+
 
 public class Server
 {
@@ -19,8 +21,8 @@ public class Server
     private final Javalin javalin;
     ClearService clearService;
     UserService userService;
-    //AuthService authService;
     GameService gameService;
+
 
 
     public Server()
@@ -35,7 +37,6 @@ public class Server
 
 
         this.userService = new UserService(userDao, authDao);
-        //this.authService = new AuthService(userDao, authDao);
         this.gameService = new GameService(authDao, gameDao);
         this.clearService = new ClearService(userDao, authDao, gameDao);
 
@@ -53,11 +54,9 @@ public class Server
         javalin.exception(UnauthorizedException.class,(e,ctx) -> exceptionHandler(e,401,ctx));
         javalin.exception(AlreadyTakenException.class,(e,ctx) -> exceptionHandler(e,403,ctx));
         javalin.exception(DataAccessException.class,(e,ctx) -> exceptionHandler(e,500,ctx));
+
+        createDatabase();
     }
-
-
-
-
 
     public int run(int desiredPort)
     {
@@ -133,5 +132,16 @@ public class Server
         ctx.status(errorCode);
         var message = Map.of("message","Error: " + ex.getMessage());
         ctx.result(new Gson().toJson(message));
+    }
+
+    private static void createDatabase()
+    {
+        try
+        {
+            DatabaseManager.createDatabase();
+        }catch (DataAccessException e)
+        {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }

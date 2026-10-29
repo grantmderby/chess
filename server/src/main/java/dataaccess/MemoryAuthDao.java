@@ -16,7 +16,6 @@ public class MemoryAuthDao implements AuthDao
         this.authMap = new HashMap<>();
     }
 
-    @Override
     public AuthData getAuth(String authToken)
     {
         if (authMap.isEmpty())
@@ -26,25 +25,21 @@ public class MemoryAuthDao implements AuthDao
         return authMap.get(authToken);
     }
 
-    @Override
     public boolean verifyAuth(String authToken) throws DataAccessException
     {
         return !authMap.containsKey(authToken);
     }
 
-    @Override
     public void createAuth(AuthData auth) throws DataAccessException
     {
         authMap.put(auth.authToken(), auth);
     }
 
-    @Override
     public void deleteAuth(String authToken) throws DataAccessException
     {
         authMap.remove(authToken);
     }
 
-    @Override
     public void clearAuths() throws DataAccessException
     {
         authMap.clear();

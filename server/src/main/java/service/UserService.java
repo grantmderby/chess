@@ -54,15 +54,8 @@ public class UserService
 
     public void logoutUser(String authToken) throws UnauthorizedException, DataAccessException
     {
-        if(authDao.verifyAuth(authToken))
-        {
-            throw new UnauthorizedException("Unauthorized to perform this action");
-        }
-
-        else
-        {
-            authDao.deleteAuth(authToken);
-        }
+        verifyAuth(authToken);
+        authDao.deleteAuth(authToken);
     }
 
     private AuthData createAuth(String username) throws DataAccessException
@@ -71,6 +64,14 @@ public class UserService
         var authData = new AuthData(username,token);
         authDao.createAuth(authData);
         return authData;
+    }
+
+    private void verifyAuth(String authToken) throws DataAccessException, UnauthorizedException
+    {
+        if (authDao.getAuth(authToken)==null)
+        {
+            throw new UnauthorizedException("Unauthorized to perform this action");
+        }
     }
 
 }

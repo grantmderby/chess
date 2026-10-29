@@ -5,7 +5,7 @@ import model.AuthData;
 
 public interface AuthDao
 {
-    AuthData getAuth(String authToken);
+    AuthData getAuth(String authToken) throws DataAccessException;
 
     boolean verifyAuth(String authToken) throws DataAccessException;
 

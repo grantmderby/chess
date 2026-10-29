@@ -25,10 +25,7 @@ public class GameService
 
     public List<GameInfo> listGames(String authToken) throws UnauthorizedException, DataAccessException
     {
-        if (authDao.verifyAuth(authToken))
-        {
-            throw new UnauthorizedException("Unauthorized to perform this action");
-        }
+        verifyAuth(authToken);
 
         List<GameInfo> gameInfo = new ArrayList<>();
         var gameList = gameDao.listGames();
@@ -43,14 +40,13 @@ public class GameService
 
     public int createGame(String authToken, String gameName) throws UnauthorizedException, DataAccessException, BadRequestException
     {
+
         if (gameName == null)
         {
             throw new BadRequestException("Game name was not included in request");
         }
-        if (authDao.verifyAuth(authToken))
-        {
-            throw new UnauthorizedException("Unauthorized to perform this action");
-        }
+
+        verifyAuth(authToken);
 
         return gameDao.createGame(gameName);
     }
@@ -58,10 +54,7 @@ public class GameService
     public void joinGame(String authToken, String playerColor, int gameID)
             throws DataAccessException, UnauthorizedException, BadRequestException, AlreadyTakenException
     {
-        if (authDao.verifyAuth(authToken))
-        {
-            throw new UnauthorizedException("Unauthorized to perform this action");
-        }
+        verifyAuth(authToken);
 
         var game = gameDao.getGame(gameID);
 
@@ -99,6 +92,14 @@ public class GameService
             throw new BadRequestException("Did not provide a valid player color");
         }
 
+    }
+
+    private void verifyAuth(String authToken) throws DataAccessException, UnauthorizedException
+    {
+        if (authDao.getAuth(authToken)==null)
+        {
+            throw new UnauthorizedException("Unauthorized to perform this action");
+        }
     }
 
     public void clearGameData() throws DataAccessException
