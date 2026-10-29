@@ -21,7 +21,7 @@ class MySQLAuthDaoTest
         {
             DatabaseManager.createDatabase();
             this.SQLAuthDao = new MySQLAuthDao();
-        }catch (DataAccessException e)
+        } catch (DataAccessException e)
         {
             throw new RuntimeException(e.getMessage());
         }
@@ -36,7 +36,7 @@ class MySQLAuthDaoTest
     @Test
     void createAuth()
     {
-        assertDoesNotThrow(() -> SQLAuthDao.createAuth(new AuthData("Bob","AT ABC")));
+        assertDoesNotThrow(() -> SQLAuthDao.createAuth(new AuthData("Bob", "AT ABC")));
     }
 
     @Test
@@ -45,14 +45,14 @@ class MySQLAuthDaoTest
         String username = "Bob";
         String authToken = "ABC123";
 
-        SQLAuthDao.createAuth(new AuthData(username,authToken));
+        SQLAuthDao.createAuth(new AuthData(username, authToken));
 
         assertDoesNotThrow(() -> SQLAuthDao.getAuth(authToken));
         AuthData auth = SQLAuthDao.getAuth(authToken);
         assertNotNull(auth);
         assertEquals(authToken, auth.authToken());
         assertEquals(username, auth.username());
-        System.out.printf("%s and %s were successfully added and returned from db%n",username, authToken);
+        System.out.printf("%s and %s were successfully added and returned from db%n", username, authToken);
     }
 
     @Test
@@ -61,7 +61,7 @@ class MySQLAuthDaoTest
         String username = "Bob";
         String authToken = "ABC123";
 
-        SQLAuthDao.createAuth(new AuthData(username,authToken));
+        SQLAuthDao.createAuth(new AuthData(username, authToken));
         AuthData auth = SQLAuthDao.getAuth(authToken);
         assertNotNull(auth);
 
@@ -77,10 +77,4 @@ class MySQLAuthDaoTest
         assertDoesNotThrow(() -> SQLAuthDao.clearAuths());
     }
 
-    void getAndDeleteHelper() throws DataAccessException
-    {
-
-
-
-    }
 }

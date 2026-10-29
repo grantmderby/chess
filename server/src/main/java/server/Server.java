@@ -36,7 +36,7 @@ public class Server
 
         createDatabase();
 
-        this.userDao = new MemoryUserDao();
+        this.userDao = new MySQLUserDao();
         this.authDao = new MySQLAuthDao();
         this.gameDao = new MemoryGameDao();
 
