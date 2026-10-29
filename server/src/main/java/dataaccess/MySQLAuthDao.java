@@ -11,9 +11,16 @@ import model.*;
 public class MySQLAuthDao implements AuthDao
 {
 
-    public MySQLAuthDao() throws DataAccessException
+    public MySQLAuthDao()
     {
-        configureDatabase();
+        try
+        {
+            configureDatabase();
+        }catch (DataAccessException ex)
+        {
+            throw new RuntimeException(String.format("Error: Table failed to be added, cannot continue. Error: %s",ex.getMessage()));
+        }
+
     }
 
     public void createAuth(AuthData auth) throws DataAccessException
@@ -126,7 +133,7 @@ public class MySQLAuthDao implements AuthDao
 
     private void configureDatabase() throws DataAccessException
     {
-        DatabaseManager.createDatabase();
+        System.out.println("Configure database has run");
         try (Connection conn = DatabaseManager.getConnection())
         {
             for (String statement : createStatements)

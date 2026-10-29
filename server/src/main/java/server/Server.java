@@ -22,18 +22,21 @@ public class Server
     ClearService clearService;
     UserService userService;
     GameService gameService;
-
+    AuthDao authDao;
 
 
     public Server()
     {
+        createDatabase();
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         // Register your endpoints and exception handlers here.
         UserDao userDao = new MemoryUserDao();
-        AuthDao authDao = new MemoryAuthDao();
+        //AuthDao authDao = new MySQLAuthDao();
         GameDao gameDao = new MemoryGameDao();
+
+        this.authDao = new MySQLAuthDao();
 
 
         this.userService = new UserService(userDao, authDao);
@@ -55,7 +58,7 @@ public class Server
         javalin.exception(AlreadyTakenException.class,(e,ctx) -> exceptionHandler(e,403,ctx));
         javalin.exception(DataAccessException.class,(e,ctx) -> exceptionHandler(e,500,ctx));
 
-        createDatabase();
+
     }
 
     public int run(int desiredPort)

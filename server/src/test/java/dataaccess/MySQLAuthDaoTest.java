@@ -6,18 +6,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Objects;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class MySQLAuthDaoTest
 {
 
-    MySQLAuthDao SQLAuthDao;
+    //MySQLAuthDao SQLAuthDao;
+    AuthDao SQLAuthDao;
 
     @BeforeEach
     void setUp()
@@ -25,7 +20,8 @@ class MySQLAuthDaoTest
         try
         {
             DatabaseManager.createDatabase();
-            SQLAuthDao = new MySQLAuthDao();
+            //SQLAuthDao = new MySQLAuthDao();
+            this.SQLAuthDao = new MySQLAuthDao();
         }catch (DataAccessException e)
         {
             throw new RuntimeException(e.getMessage());
@@ -61,8 +57,31 @@ class MySQLAuthDaoTest
     }
 
     @Test
+    void deleteAuth() throws DataAccessException
+    {
+        String username = "Bob";
+        String authToken = "ABC123";
+
+        SQLAuthDao.createAuth(new AuthData(username,authToken));
+        AuthData auth = SQLAuthDao.getAuth(authToken);
+        assertNotNull(auth);
+
+        SQLAuthDao.deleteAuth(auth.authToken());
+        auth = SQLAuthDao.getAuth(authToken);
+        assertNull(auth);
+
+    }
+
+    @Test
     void clearAuth()
     {
         assertDoesNotThrow(() -> SQLAuthDao.clearAuths());
+    }
+
+    void getAndDeleteHelper() throws DataAccessException
+    {
+
+
+
     }
 }
