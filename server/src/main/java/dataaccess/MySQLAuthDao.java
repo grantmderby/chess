@@ -108,7 +108,7 @@ public class MySQLAuthDao implements AuthDao
 
     private void clearAuthHelper() throws DataAccessException
     {
-        String sqlStatement = "DROP TABLE IF EXISTS AuthData";
+        String sqlStatement = "TRUNCATE TABLE AuthData";
         try(Connection databaseConnection = DatabaseManager.getConnection();)
         {
             try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatement))
@@ -133,7 +133,6 @@ public class MySQLAuthDao implements AuthDao
 
     private void configureDatabase() throws DataAccessException
     {
-        System.out.println("Configure database has run");
         try (Connection conn = DatabaseManager.getConnection())
         {
             for (String statement : createStatements)
