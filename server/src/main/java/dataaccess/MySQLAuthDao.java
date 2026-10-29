@@ -46,8 +46,21 @@ public class MySQLAuthDao implements AuthDao
 
     public void clearAuths() throws DataAccessException
     {
-        authMap.clear();
+        String sqlStatement = "DROP TABLE IF EXISTS AuthData";
+        try(Connection databaseConnection = DatabaseManager.getConnection();)
+        {
+            try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatement))
+            {
+                preparedStatement.executeUpdate();
+            }
+        } catch(SQLException | DataAccessException sqlError)
+        {
+            String errorMessage = String.format("Unable to update database: %s, %s",sqlStatement,sqlError.getMessage());
+            throw new DataAccessException(errorMessage);
+        }
     }
+
+
 
     private final String[] createStatements = {
             """

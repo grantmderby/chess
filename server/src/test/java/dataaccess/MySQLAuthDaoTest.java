@@ -6,6 +6,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,9 +33,9 @@ class MySQLAuthDaoTest
     }
 
     @AfterEach
-    void tearDown()
+    void tearDown() throws DataAccessException
     {
-
+        SQLAuthDao.clearAuths();
     }
 
     @Test
@@ -43,10 +47,22 @@ class MySQLAuthDaoTest
     @Test
     void getAuth() throws DataAccessException
     {
-        assertDoesNotThrow(() -> SQLAuthDao.getAuth("AT ABC"));
-        AuthData auth = SQLAuthDao.getAuth("AT ABC");
+        String username = "Bob";
+        String authToken = "ABC123";
+
+        SQLAuthDao.createAuth(new AuthData(username,authToken));
+
+        assertDoesNotThrow(() -> SQLAuthDao.getAuth(authToken));
+        AuthData auth = SQLAuthDao.getAuth(authToken);
         assertNotNull(auth);
-        assertEquals("AT ABC", auth.authToken());
-        assertEquals("Bob", auth.username());
+        assertEquals(authToken, auth.authToken());
+        assertEquals(username, auth.username());
+        System.out.printf("%s and %s were successfully added and returned from db%n",username, authToken);
+    }
+
+    @Test
+    void clearAuth()
+    {
+        assertDoesNotThrow(() -> SQLAuthDao.clearAuths());
     }
 }

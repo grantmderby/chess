@@ -1029,30 +1029,5 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
     <user id="296" parent="1" name="root">
       <Host>localhost</Host>
     </user>
-    <table id="297" parent="288" name="authdata">
-      <DetailsLevel>3</DetailsLevel>
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8mb4_0900_ai_ci</CollationName>
-    </table>
-    <column id="298" parent="297" name="authToken">
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StoredType>varchar(100)|0s</StoredType>
-    </column>
-    <column id="299" parent="297" name="username">
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>varchar(100)|0s</StoredType>
-    </column>
-    <index id="300" parent="297" name="PRIMARY">
-      <ColNames>authToken</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <key id="301" parent="297" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
-    </key>
   </database-model>
 </dataSource>
