@@ -3,6 +3,9 @@ package service;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.eclipse.jetty.server.Authentication;
+import org.mindrot.jbcrypt.BCrypt;
+
 import dataaccess.*;
 import model.*;
 import exception.*;
@@ -30,6 +33,8 @@ public class UserService
         }
         else
         {
+            String hashedPassword = BCrypt.hashpw(user.password(),BCrypt.gensalt());
+            user = new UserData(user.username(),hashedPassword,user.email());
             userDao.createUser(user);
             return createAuth(user.username());
         }
@@ -42,7 +47,7 @@ public class UserService
             throw new BadRequestException("The username and/or password was not included");
         }
         if(userDao.getUser(user.username())==null
-                || !Objects.equals(userDao.getUser(user.username()).password(), user.password()))
+                || !BCrypt.checkpw(user.password(),userDao.getUser(user.username()).password()))
         {
             throw new UnauthorizedException("Username or Password is incorrect");
         }
