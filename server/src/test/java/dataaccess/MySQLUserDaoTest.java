@@ -34,9 +34,15 @@ public class MySQLUserDaoTest
     }
 
     @Test
-    void createUser()
+    void createUserGood()
     {
         assertDoesNotThrow(() -> SQLUserDao.createUser(new UserData("test","password","email")));
+    }
+
+    @Test
+    void createUserBad()
+    {
+        assertThrows(DataAccessException.class, () -> SQLUserDao.createUser(new UserData(null,"password","email")));
     }
 
     @Test

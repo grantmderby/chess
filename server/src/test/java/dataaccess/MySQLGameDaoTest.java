@@ -62,6 +62,18 @@ public class MySQLGameDaoTest
     }
 
     @Test
+    void updateGame() throws DataAccessException, BadRequestException
+    {
+        String gameName = "Test";
+        String blackUsername = "bob";
+        var gameID = SQLGameDao.createGame(gameName);
+
+        GameData data = new GameData(gameID,null,blackUsername,gameName,new ChessGame());
+        assertDoesNotThrow(()->SQLGameDao.updateGame(data));
+        assertEquals(blackUsername, SQLGameDao.getGame(gameID).blackUsername());
+    }
+
+    @Test
     void listGames() throws DataAccessException
     {
         SQLGameDao.createGame("Test1");

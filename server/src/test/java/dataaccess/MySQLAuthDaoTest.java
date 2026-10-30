@@ -35,9 +35,15 @@ class MySQLAuthDaoTest
     }
 
     @Test
-    void createAuth()
+    void createAuthGood()
     {
         assertDoesNotThrow(() -> SQLAuthDao.createAuth(new AuthData("Bob", "AT ABC")));
+    }
+
+    @Test
+    void createAuthBad()
+    {
+        assertThrows(DataAccessException.class, () -> SQLAuthDao.createAuth(new AuthData(null, "AT ABC")));
     }
 
     @Test
