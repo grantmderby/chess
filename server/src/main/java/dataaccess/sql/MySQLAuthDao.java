@@ -1,56 +1,62 @@
-package dataaccess;
+package dataaccess.sql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import dataaccess.AuthDao;
 import exception.DataAccessException;
 import model.*;
 
-public class MySQLUserDao implements UserDao
+
+public class MySQLAuthDao implements AuthDao
 {
 
-    public MySQLUserDao()
+    public MySQLAuthDao()
     {
         try
         {
             configureDatabase();
         }catch (DataAccessException ex)
         {
-            throw new RuntimeException(String.format("Error: UserTable failed to be added, cannot continue. Error: %s",ex.getMessage()));
+            throw new RuntimeException(String.format("Error: AuthTable failed to be added, cannot continue. Error: %s",ex.getMessage()));
         }
 
     }
 
-    public void createUser(UserData user) throws DataAccessException
+    public void createAuth(AuthData auth) throws DataAccessException
     {
-        var statement = "INSERT INTO UserData (username, password, email) VALUES (?,?,?)";
-        createUserHelper(statement, user);
+        var statement = "INSERT INTO AuthData (authToken, username) VALUES (?,?)";
+        createAuthHelper(statement, auth);
     }
 
-
-    public UserData getUser(String username) throws DataAccessException
-    {
-        var statement = "SELECT * FROM UserData WHERE username = ?";
-        return getUserHelper(statement, username);
+   public AuthData getAuth(String authToken) throws DataAccessException
+   {
+        var statement = "SELECT * FROM AuthData WHERE authToken = ?";
+        return getAuthHelper(statement,authToken);
     }
 
-
-    public void clearUsers() throws DataAccessException
+    public void deleteAuth(String authToken) throws DataAccessException
     {
-        String statement = "TRUNCATE TABLE UserData";
-        clearUsersHelper(statement);
+        var statement = "DELETE FROM AuthData WHERE authToken = ?";
+        deleteAuthHelper(statement, authToken);
     }
 
-    private void createUserHelper(String sqlStatement, UserData user) throws DataAccessException
+    public void clearAuths() throws DataAccessException
+    {
+        String statement = "TRUNCATE TABLE AuthData";
+        clearAuthHelper(statement);
+    }
+
+    private void createAuthHelper(String sqlStatement, AuthData auth) throws DataAccessException
     {
         try(Connection databaseConnection = DatabaseManager.getConnection())
         {
             try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatement))
             {
-                preparedStatement.setString(1,user.username());
-                preparedStatement.setString(2,user.password());
-                preparedStatement.setString(3,user.email());
+                preparedStatement.setString(1,auth.authToken());
+                preparedStatement.setString(2,auth.username());
                 preparedStatement.executeUpdate();
             }
         }
@@ -61,22 +67,20 @@ public class MySQLUserDao implements UserDao
         }
     }
 
-    private UserData getUserHelper(String sqlStatement, String username) throws DataAccessException
+    private AuthData getAuthHelper(String sqlStatement, String authToken) throws DataAccessException
     {
         try(Connection databaseConnection = DatabaseManager.getConnection();
             PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatement))
         {
-            preparedStatement.setString(1,username);
+            preparedStatement.setString(1,authToken);
             try (ResultSet resultSet = preparedStatement.executeQuery())
             {
                 if(resultSet.next())
                 {
-                    String usernameFromDB = resultSet.getString(1);
-                    String passwordFromDB = resultSet.getString(2);
-                    String emailFromDB = resultSet.getString(3);
+                    String authTokenFromDB = resultSet.getString(1);
+                    String usernameFromDB = resultSet.getString(2);
 
-
-                    return new UserData(usernameFromDB,passwordFromDB,emailFromDB);
+                    return new AuthData(usernameFromDB,authTokenFromDB);
                 }
             }
         } catch(SQLException sqlError)
@@ -88,7 +92,24 @@ public class MySQLUserDao implements UserDao
         return null;
     }
 
-    private void clearUsersHelper(String sqlStatement) throws DataAccessException
+    private void deleteAuthHelper(String sqlStatement, String authToken) throws DataAccessException
+    {
+        try(Connection databaseConnection = DatabaseManager.getConnection())
+        {
+
+            try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatement))
+            {
+                preparedStatement.setString(1,authToken);
+                preparedStatement.executeUpdate();
+            }
+        } catch(SQLException sqlError)
+        {
+            String errorMessage = String.format("Unable to update database: %s, %s",sqlStatement,sqlError.getMessage());
+            throw new DataAccessException(errorMessage);
+        }
+    }
+
+    private void clearAuthHelper(String sqlStatement) throws DataAccessException
     {
         try(Connection databaseConnection = DatabaseManager.getConnection())
         {
@@ -105,10 +126,9 @@ public class MySQLUserDao implements UserDao
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS UserData (
-               username VARCHAR(100) PRIMARY KEY,
-               password VARCHAR(100) NOT NULL,
-               email VARCHAR(100)
+            CREATE TABLE IF NOT EXISTS AuthData (
+               authToken VARCHAR(100) PRIMARY KEY,
+               username VARCHAR(100) NOT NULL
              );
             """
     };
@@ -129,4 +149,5 @@ public class MySQLUserDao implements UserDao
             throw new DataAccessException(String.format("Unable to configure database: %s", sqlError.getMessage()));
         }
     }
+
 }

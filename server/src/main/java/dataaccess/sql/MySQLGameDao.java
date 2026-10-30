@@ -1,4 +1,4 @@
-package dataaccess;
+package dataaccess.sql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,6 +9,7 @@ import java.util.List;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import dataaccess.GameDao;
 import exception.DataAccessException;
 import model.*;
 

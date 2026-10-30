@@ -1,5 +1,7 @@
 package dataaccess;
 
+import dataaccess.sql.DatabaseManager;
+import dataaccess.sql.MySQLUserDao;
 import exception.DataAccessException;
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
