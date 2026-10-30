@@ -12,12 +12,23 @@ import model.*;
 
 public class MySQLAuthDao implements AuthDao
 {
+    AdditionalFunctions addFunc = new AdditionalFunctions();
 
     public MySQLAuthDao()
     {
         try
         {
-            configureDatabase();
+
+            String[] createStatements = {
+                    """
+            CREATE TABLE IF NOT EXISTS AuthData (
+               authToken VARCHAR(100) PRIMARY KEY,
+               username VARCHAR(100) NOT NULL
+             );
+            """
+            };
+
+            addFunc.configureDatabase(createStatements);
         }catch (DataAccessException ex)
         {
             throw new RuntimeException(String.format("Error: AuthTable failed to be added, cannot continue. Error: %s",ex.getMessage()));
@@ -46,7 +57,7 @@ public class MySQLAuthDao implements AuthDao
     public void clearAuths() throws DataAccessException
     {
         String statement = "TRUNCATE TABLE AuthData";
-        clearAuthHelper(statement);
+        addFunc.clearHelper(statement);
     }
 
     private void createAuthHelper(String sqlStatement, AuthData auth) throws DataAccessException
@@ -106,47 +117,6 @@ public class MySQLAuthDao implements AuthDao
         {
             String errorMessage = String.format("Unable to update database: %s, %s",sqlStatement,sqlError.getMessage());
             throw new DataAccessException(errorMessage);
-        }
-    }
-
-    private void clearAuthHelper(String sqlStatement) throws DataAccessException
-    {
-        try(Connection databaseConnection = DatabaseManager.getConnection())
-        {
-            try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatement))
-            {
-                preparedStatement.executeUpdate();
-            }
-        } catch(SQLException | DataAccessException sqlError)
-        {
-            String errorMessage = String.format("Unable to update database: %s, %s",sqlStatement,sqlError.getMessage());
-            throw new DataAccessException(errorMessage);
-        }
-    }
-
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS AuthData (
-               authToken VARCHAR(100) PRIMARY KEY,
-               username VARCHAR(100) NOT NULL
-             );
-            """
-    };
-
-    private void configureDatabase() throws DataAccessException
-    {
-        try (Connection conn = DatabaseManager.getConnection())
-        {
-            for (String statement : createStatements)
-            {
-                try (var preparedStatement = conn.prepareStatement(statement))
-                {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException sqlError)
-        {
-            throw new DataAccessException(String.format("Unable to configure database: %s", sqlError.getMessage()));
         }
     }
 

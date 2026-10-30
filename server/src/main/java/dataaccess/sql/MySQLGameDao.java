@@ -17,12 +17,26 @@ public class MySQLGameDao implements GameDao
 {
 
     private int nextGameID;
+    AdditionalFunctions addFunc = new AdditionalFunctions();
 
     public MySQLGameDao()
     {
         try
         {
-            configureDatabase();
+
+            String[] createStatements = {
+                    """
+            CREATE TABLE IF NOT EXISTS GameData (
+                 gameID INT PRIMARY KEY,
+                 whiteUsername VARCHAR(100) DEFAULT NULL,
+                 blackUsername VARCHAR(100) DEFAULT NULL,
+                 gameName VARCHAR(100) NOT NULL,
+                 gameData JSON NOT NULL
+             );
+            """
+            };
+
+            addFunc.configureDatabase(createStatements);
         }catch (DataAccessException ex)
         {
             throw new RuntimeException(String.format("Error: UserTable failed to be added, cannot continue. Error: %s",ex.getMessage()));
@@ -67,7 +81,7 @@ public class MySQLGameDao implements GameDao
     public void clearGames() throws DataAccessException
     {
         String statement = "TRUNCATE TABLE GameData";
-        clearGamesHelper(statement);
+        addFunc.clearHelper(statement);
     }
 
     private void createGameHelper(String sqlStatement, GameData game) throws DataAccessException
@@ -143,47 +157,4 @@ public class MySQLGameDao implements GameDao
         return games;
     }
 
-    private void clearGamesHelper(String sqlStatement) throws DataAccessException
-    {
-        try(Connection databaseConnection = DatabaseManager.getConnection())
-        {
-            try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatement))
-            {
-                preparedStatement.executeUpdate();
-            }
-        } catch(SQLException | DataAccessException sqlError)
-        {
-            String errorMessage = String.format("Unable to update database: %s, %s",sqlStatement,sqlError.getMessage());
-            throw new DataAccessException(errorMessage);
-        }
-    }
-
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS GameData (
-                 gameID INT PRIMARY KEY,
-                 whiteUsername VARCHAR(100) DEFAULT NULL,
-                 blackUsername VARCHAR(100) DEFAULT NULL,
-                 gameName VARCHAR(100) NOT NULL,
-                 gameData JSON NOT NULL
-             );
-            """
-    };
-
-    private void configureDatabase() throws DataAccessException
-    {
-        try (Connection conn = DatabaseManager.getConnection())
-        {
-            for (String statement : createStatements)
-            {
-                try (var preparedStatement = conn.prepareStatement(statement))
-                {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException sqlError)
-        {
-            throw new DataAccessException(String.format("Unable to configure database: %s", sqlError.getMessage()));
-        }
-    }
 }

@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class MySQLUserDaoTest
 {
-    UserDao SQLUserDao;
+    UserDao sqlUserDao;
 
     @BeforeEach
     void setUp()
@@ -20,7 +20,7 @@ public class MySQLUserDaoTest
         try
         {
             DatabaseManager.createDatabase();
-            this.SQLUserDao = new MySQLUserDao();
+            this.sqlUserDao = new MySQLUserDao();
         }catch (DataAccessException e)
         {
             throw new RuntimeException(e.getMessage());
@@ -30,19 +30,19 @@ public class MySQLUserDaoTest
     @AfterEach
     void tearDown() throws DataAccessException
     {
-        SQLUserDao.clearUsers();
+        sqlUserDao.clearUsers();
     }
 
     @Test
     void createUserGood()
     {
-        assertDoesNotThrow(() -> SQLUserDao.createUser(new UserData("test","password","email")));
+        assertDoesNotThrow(() -> sqlUserDao.createUser(new UserData("test","password","email")));
     }
 
     @Test
     void createUserBad()
     {
-        assertThrows(DataAccessException.class, () -> SQLUserDao.createUser(new UserData(null,"password","email")));
+        assertThrows(DataAccessException.class, () -> sqlUserDao.createUser(new UserData(null,"password","email")));
     }
 
     @Test
@@ -52,10 +52,10 @@ public class MySQLUserDaoTest
         String password = BCrypt.hashpw("ABC123",BCrypt.gensalt());
         String email = "email";
 
-        SQLUserDao.createUser(new UserData(username,password,email));
+        sqlUserDao.createUser(new UserData(username,password,email));
 
-        assertDoesNotThrow(() -> SQLUserDao.getUser(username));
-        UserData user = SQLUserDao.getUser(username);
+        assertDoesNotThrow(() -> sqlUserDao.getUser(username));
+        UserData user = sqlUserDao.getUser(username);
         assertNotNull(user);
         assertEquals(username, user.username());
         assertTrue(BCrypt.checkpw("ABC123",user.password()));
@@ -66,6 +66,6 @@ public class MySQLUserDaoTest
     @Test
     void clearAuth()
     {
-        assertDoesNotThrow(() -> SQLUserDao.clearUsers());
+        assertDoesNotThrow(() -> sqlUserDao.clearUsers());
     }
 }

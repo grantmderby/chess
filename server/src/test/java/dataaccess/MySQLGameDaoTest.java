@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class MySQLGameDaoTest
 {
-    GameDao SQLGameDao;
+    GameDao sqlGameDao;
 
     @BeforeEach
     void setUp()
@@ -24,7 +24,7 @@ public class MySQLGameDaoTest
         try
         {
             DatabaseManager.createDatabase();
-            this.SQLGameDao = new MySQLGameDao();
+            this.sqlGameDao = new MySQLGameDao();
         }catch (DataAccessException e)
         {
             throw new RuntimeException(e.getMessage());
@@ -34,13 +34,13 @@ public class MySQLGameDaoTest
     @AfterEach
     void tearDown() throws DataAccessException
     {
-        SQLGameDao.clearGames();
+        sqlGameDao.clearGames();
     }
 
     @Test
     void createGame()
     {
-        assertDoesNotThrow(()->SQLGameDao.createGame("test"));
+        assertDoesNotThrow(()-> sqlGameDao.createGame("test"));
     }
 
     @Test
@@ -52,9 +52,9 @@ public class MySQLGameDaoTest
 
         GameData data = new GameData (gameIdTest,null,null,gameName,chessGame);
 
-        int gameID = SQLGameDao.createGame(gameName);
-        assertDoesNotThrow(()->SQLGameDao.getGame(gameID));
-        GameData game = SQLGameDao.getGame(gameID);
+        int gameID = sqlGameDao.createGame(gameName);
+        assertDoesNotThrow(()-> sqlGameDao.getGame(gameID));
+        GameData game = sqlGameDao.getGame(gameID);
         assertNotNull(game);
         assert(Objects.equals(game,data));
         assertEquals(gameName, game.gameName());
@@ -66,22 +66,22 @@ public class MySQLGameDaoTest
     {
         String gameName = "Test";
         String blackUsername = "bob";
-        var gameID = SQLGameDao.createGame(gameName);
+        var gameID = sqlGameDao.createGame(gameName);
 
         GameData data = new GameData(gameID,null,blackUsername,gameName,new ChessGame());
-        assertDoesNotThrow(()->SQLGameDao.updateGame(data));
-        assertEquals(blackUsername, SQLGameDao.getGame(gameID).blackUsername());
+        assertDoesNotThrow(()-> sqlGameDao.updateGame(data));
+        assertEquals(blackUsername, sqlGameDao.getGame(gameID).blackUsername());
     }
 
     @Test
     void listGames() throws DataAccessException
     {
-        SQLGameDao.createGame("Test1");
-        SQLGameDao.createGame("Test2");
-        SQLGameDao.createGame("Test3");
+        sqlGameDao.createGame("Test1");
+        sqlGameDao.createGame("Test2");
+        sqlGameDao.createGame("Test3");
 
 
-        var gameList = SQLGameDao.listGames();
+        var gameList = sqlGameDao.listGames();
         assertNotNull(gameList);
         assertEquals("Test1", gameList.getFirst().gameName());
         assertEquals("Test2", gameList.get(1).gameName());
@@ -94,6 +94,6 @@ public class MySQLGameDaoTest
     @Test
     void clearGame()
     {
-        assertDoesNotThrow(()-> SQLGameDao.clearGames());
+        assertDoesNotThrow(()-> sqlGameDao.clearGames());
     }
 }

@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class MySQLAuthDaoTest
 {
 
-    AuthDao SQLAuthDao;
+    AuthDao sqlAuthDao;
 
     @BeforeEach
     void setUp()
@@ -21,7 +21,7 @@ class MySQLAuthDaoTest
         try
         {
             DatabaseManager.createDatabase();
-            this.SQLAuthDao = new MySQLAuthDao();
+            this.sqlAuthDao = new MySQLAuthDao();
         } catch (DataAccessException e)
         {
             throw new RuntimeException(e.getMessage());
@@ -31,19 +31,19 @@ class MySQLAuthDaoTest
     @AfterEach
     void tearDown() throws DataAccessException
     {
-        SQLAuthDao.clearAuths();
+        sqlAuthDao.clearAuths();
     }
 
     @Test
     void createAuthGood()
     {
-        assertDoesNotThrow(() -> SQLAuthDao.createAuth(new AuthData("Bob", "AT ABC")));
+        assertDoesNotThrow(() -> sqlAuthDao.createAuth(new AuthData("Bob", "AT ABC")));
     }
 
     @Test
     void createAuthBad()
     {
-        assertThrows(DataAccessException.class, () -> SQLAuthDao.createAuth(new AuthData(null, "AT ABC")));
+        assertThrows(DataAccessException.class, () -> sqlAuthDao.createAuth(new AuthData(null, "AT ABC")));
     }
 
     @Test
@@ -52,10 +52,10 @@ class MySQLAuthDaoTest
         String username = "Bob";
         String authToken = "ABC123";
 
-        SQLAuthDao.createAuth(new AuthData(username, authToken));
+        sqlAuthDao.createAuth(new AuthData(username, authToken));
 
-        assertDoesNotThrow(() -> SQLAuthDao.getAuth(authToken));
-        AuthData auth = SQLAuthDao.getAuth(authToken);
+        assertDoesNotThrow(() -> sqlAuthDao.getAuth(authToken));
+        AuthData auth = sqlAuthDao.getAuth(authToken);
         assertNotNull(auth);
         assertEquals(authToken, auth.authToken());
         assertEquals(username, auth.username());
@@ -68,12 +68,12 @@ class MySQLAuthDaoTest
         String username = "Bob";
         String authToken = "ABC123";
 
-        SQLAuthDao.createAuth(new AuthData(username, authToken));
-        AuthData auth = SQLAuthDao.getAuth(authToken);
+        sqlAuthDao.createAuth(new AuthData(username, authToken));
+        AuthData auth = sqlAuthDao.getAuth(authToken);
         assertNotNull(auth);
 
-        SQLAuthDao.deleteAuth(auth.authToken());
-        auth = SQLAuthDao.getAuth(authToken);
+        sqlAuthDao.deleteAuth(auth.authToken());
+        auth = sqlAuthDao.getAuth(authToken);
         assertNull(auth);
 
     }
@@ -81,7 +81,7 @@ class MySQLAuthDaoTest
     @Test
     void clearAuth()
     {
-        assertDoesNotThrow(() -> SQLAuthDao.clearAuths());
+        assertDoesNotThrow(() -> sqlAuthDao.clearAuths());
     }
 
 }
