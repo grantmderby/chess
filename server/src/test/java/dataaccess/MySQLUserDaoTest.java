@@ -6,7 +6,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MySQLUserDaoTest
@@ -53,7 +52,7 @@ public class MySQLUserDaoTest
         assertEquals(username, user.username());
         assertTrue(BCrypt.checkpw("ABC123",user.password()));
         assertEquals(email, user.email());
-        System.out.printf("User %s, %s, %s was successfully added and returned from db%n",username, user.password(), email);
+        System.out.printf("User %s, %s, %s was successfully added and returned from db", username, user.password(), email);
     }
 
     @Test

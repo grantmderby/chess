@@ -90,7 +90,7 @@ public class MySQLUserDao implements UserDao
 
     private void clearUsersHelper(String sqlStatement) throws DataAccessException
     {
-        try(Connection databaseConnection = DatabaseManager.getConnection();)
+        try(Connection databaseConnection = DatabaseManager.getConnection())
         {
             try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatement))
             {

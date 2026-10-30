@@ -109,7 +109,7 @@ public class MySQLAuthDao implements AuthDao
 
     private void clearAuthHelper(String sqlStatement) throws DataAccessException
     {
-        try(Connection databaseConnection = DatabaseManager.getConnection();)
+        try(Connection databaseConnection = DatabaseManager.getConnection())
         {
             try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatement))
             {
