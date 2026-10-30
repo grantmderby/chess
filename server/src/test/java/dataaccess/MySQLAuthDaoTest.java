@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class MySQLAuthDaoTest
 {
 
-    //MySQLAuthDao SQLAuthDao;
     AuthDao SQLAuthDao;
 
     @BeforeEach

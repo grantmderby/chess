@@ -8,6 +8,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,6 +58,21 @@ public class MySQLGameDaoTest
         assert(Objects.equals(game,data));
         assertEquals(gameName, game.gameName());
         System.out.printf("Game %s was successfully added and returned from db",gameName);
+    }
+
+    @Test
+    void listGames() throws DataAccessException
+    {
+        SQLGameDao.createGame("Test1");
+        SQLGameDao.createGame("Test2");
+        SQLGameDao.createGame("Test3");
+
+
+        var gameList = SQLGameDao.listGames();
+        assertNotNull(gameList);
+        assertEquals("Test1", gameList.getFirst().gameName());
+        assertEquals("Test2", gameList.get(1).gameName());
+        assertEquals("Test3", gameList.getLast().gameName());
     }
 
 

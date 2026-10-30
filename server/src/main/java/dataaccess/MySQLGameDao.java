@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import chess.ChessGame;
@@ -46,12 +47,21 @@ public class MySQLGameDao implements GameDao
     public GameData getGame(int gameID) throws DataAccessException, BadRequestException
     {
         var statement = "SELECT * FROM gameData WHERE gameID = ?";
-        return getGameHelper(statement,gameID);
+        ArrayList<GameData> game = getGameAndListHelper(statement,gameID);
+        if(!game.isEmpty())
+        {
+            return game.getFirst();
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public List<GameData> listGames() throws DataAccessException
     {
-        return List.of();
+        var statement = "SELECT * FROM gameData";
+        return getGameAndListHelper(statement,-1);
     }
 
     public void clearGames() throws DataAccessException
@@ -60,15 +70,19 @@ public class MySQLGameDao implements GameDao
         clearGamesHelper(statement);
     }
 
-    private GameData getGameHelper(String sqlStatement, int gameID) throws DataAccessException
+    private ArrayList<GameData> getGameAndListHelper(String sqlStatement, int gameID) throws DataAccessException
     {
+        var games = new ArrayList<GameData>();
         try(Connection databaseConnection = DatabaseManager.getConnection();
             PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatement))
         {
-            preparedStatement.setInt(1,gameID);
+            if(gameID>0)
+            {
+                preparedStatement.setInt(1,gameID);
+            }
             try (ResultSet resultSet = preparedStatement.executeQuery())
             {
-                if(resultSet.next())
+                while(resultSet.next())
                 {
                     int gameIDFromDB = resultSet.getInt(1);
                     String wUserFromDB = resultSet.getString(2);
@@ -76,7 +90,7 @@ public class MySQLGameDao implements GameDao
                     String gameName= resultSet.getString(4);
                     ChessGame chessGame = new Gson().fromJson(resultSet.getString(5),ChessGame.class);
 
-                    return new GameData(gameIDFromDB,wUserFromDB,bUserFromDB,gameName,chessGame);
+                    games.add(new GameData(gameIDFromDB,wUserFromDB,bUserFromDB,gameName,chessGame));
                 }
             }
         } catch(SQLException sqlError)
@@ -85,7 +99,7 @@ public class MySQLGameDao implements GameDao
             throw new DataAccessException(errorMessage);
         }
 
-        return null;
+        return games;
     }
 
     private void createAndUpdateGameHelper(String sqlStatement, GameData game) throws DataAccessException
@@ -145,7 +159,6 @@ public class MySQLGameDao implements GameDao
                 try (var preparedStatement = conn.prepareStatement(statement))
                 {
                     preparedStatement.executeUpdate();
-                    System.out.println("Table Created");
                 }
             }
         } catch (SQLException sqlError)
