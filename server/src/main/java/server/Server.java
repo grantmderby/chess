@@ -12,7 +12,6 @@ import model.*;
 import request.*;
 import response.*;
 
-import javax.xml.crypto.Data;
 
 
 public class Server
@@ -38,7 +37,7 @@ public class Server
 
         this.userDao = new MySQLUserDao();
         this.authDao = new MySQLAuthDao();
-        this.gameDao = new MemoryGameDao();
+        this.gameDao = new MySQLGameDao();
 
         this.userService = new UserService(userDao, authDao);
         this.gameService = new GameService(authDao, gameDao);

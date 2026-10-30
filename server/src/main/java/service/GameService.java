@@ -54,6 +54,10 @@ public class GameService
     public void joinGame(String authToken, String playerColor, int gameID)
             throws DataAccessException, UnauthorizedException, BadRequestException, AlreadyTakenException
     {
+        if(gameID == 0)
+        {
+            throw new BadRequestException("No gameID was given");
+        }
         verifyAuth(authToken);
 
         var game = gameDao.getGame(gameID);

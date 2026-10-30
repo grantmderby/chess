@@ -9,7 +9,6 @@ import java.util.List;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import exception.BadRequestException;
 import exception.DataAccessException;
 import model.*;
 
@@ -34,17 +33,17 @@ public class MySQLGameDao implements GameDao
     {
         var statement = "INSERT INTO GameData (gameID, whiteUsername, blackUsername, gameName, gameData) VALUES (?,?,?,?,?)";
         var game = new GameData(nextGameID, null, null, gameName, new ChessGame());
-        createAndUpdateGameHelper(statement, game);
+        createGameHelper(statement, game);
         return nextGameID++;
     }
 
     public void updateGame(GameData game) throws DataAccessException
     {
-        var statement = "INSERT INTO GameData (gameID, whiteUsername, blackUsername, gameName, gameData) VALUES (?,?,?,?,?)";
-        createAndUpdateGameHelper(statement, game);
+        var statement = "UPDATE GameData SET whiteUsername = ?, blackUsername = ?, gameData = ? WHERE gameID = ?";
+        updateGameHelper(statement, game);
     }
 
-    public GameData getGame(int gameID) throws DataAccessException, BadRequestException
+    public GameData getGame(int gameID) throws DataAccessException
     {
         var statement = "SELECT * FROM gameData WHERE gameID = ?";
         ArrayList<GameData> game = getGameAndListHelper(statement,gameID);
@@ -68,6 +67,47 @@ public class MySQLGameDao implements GameDao
     {
         String statement = "TRUNCATE TABLE GameData";
         clearGamesHelper(statement);
+    }
+
+    private void createGameHelper(String sqlStatement, GameData game) throws DataAccessException
+    {
+        try(Connection databaseConnection = DatabaseManager.getConnection())
+        {
+            try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatement))
+            {
+                preparedStatement.setInt(1,game.gameId());
+                preparedStatement.setString(2,game.whiteUsername());
+                preparedStatement.setString(3,game.blackUsername());
+                preparedStatement.setString(4,game.gameName());
+                preparedStatement.setString(5,new Gson().toJson(game.game()));
+                preparedStatement.executeUpdate();
+            }
+        }
+        catch (SQLException sqlError)
+        {
+            String errorMessage = String.format("Unable to update database: %s, %s",sqlStatement,sqlError.getMessage());
+            throw new DataAccessException(errorMessage);
+        }
+    }
+
+    private void updateGameHelper(String sqlStatement, GameData game) throws DataAccessException
+    {
+        try(Connection databaseConnection = DatabaseManager.getConnection())
+        {
+            try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatement))
+            {
+                preparedStatement.setString(1,game.whiteUsername());
+                preparedStatement.setString(2,game.blackUsername());
+                preparedStatement.setString(3,new Gson().toJson(game.game()));
+                preparedStatement.setInt(4,game.gameId());
+                preparedStatement.executeUpdate();
+            }
+        }
+        catch (SQLException sqlError)
+        {
+            String errorMessage = String.format("Unable to update database: %s, %s",sqlStatement,sqlError.getMessage());
+            throw new DataAccessException(errorMessage);
+        }
     }
 
     private ArrayList<GameData> getGameAndListHelper(String sqlStatement, int gameID) throws DataAccessException
@@ -100,27 +140,6 @@ public class MySQLGameDao implements GameDao
         }
 
         return games;
-    }
-
-    private void createAndUpdateGameHelper(String sqlStatement, GameData game) throws DataAccessException
-    {
-        try(Connection databaseConnection = DatabaseManager.getConnection())
-        {
-            try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatement))
-            {
-                preparedStatement.setInt(1,game.gameId());
-                preparedStatement.setString(2,game.whiteUsername());
-                preparedStatement.setString(3,game.blackUsername());
-                preparedStatement.setString(4,game.gameName());
-                preparedStatement.setString(5,new Gson().toJson(game.game()));
-                preparedStatement.executeUpdate();
-            }
-        }
-        catch (SQLException sqlError)
-        {
-            String errorMessage = String.format("Unable to update database: %s, %s",sqlStatement,sqlError.getMessage());
-            throw new DataAccessException(errorMessage);
-        }
     }
 
     private void clearGamesHelper(String sqlStatement) throws DataAccessException
