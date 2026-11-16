@@ -1,9 +1,7 @@
 package service;
 
-import java.util.Objects;
 import java.util.UUID;
 
-import org.eclipse.jetty.server.Authentication;
 import org.mindrot.jbcrypt.BCrypt;
 
 import dataaccess.*;
