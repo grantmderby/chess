@@ -7,13 +7,11 @@ import java.net.http.*;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.util.List;
 
 import exception.ResponseException;
 import model.*;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
-import response.GameInfo;
 import response.ListResult;
 
 public class ServerFacade
@@ -64,19 +62,22 @@ public class ServerFacade
         return handleResponse(response,String.class);
     }
 
-    public void joinGame(String authToken, String playerColor, int gameID)
+    public void joinGame(String authToken, String playerColor, int gameID) throws ResponseException
     {
         var joinGameRequest = new JoinGameRequest(playerColor,gameID);
         var request = buildRequest("PUT","/game",joinGameRequest,authToken);
+        var response = sendRequest(request);
+        handleResponse(response,JoinGameRequest.class);
     }
-    //register
-    //login
-    //logout
-    //createGame
-    //listGames
-    //playGame
+
+    public void clearDatabase() throws ResponseException
+    {
+        var request = buildRequest("DELETE","/db",null,null);
+        var response = sendRequest(request);
+        handleResponse(response,null);
+    }
+
     //observeGame
-    //clearDatabase
 
     private HttpRequest buildRequest(String method, String path, Object body, String authToken)
     {
