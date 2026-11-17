@@ -7,8 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import model.*;
-import exception.*;
 import dataaccess.*;
+import exception.*;
 
 class UserServiceTest
 {

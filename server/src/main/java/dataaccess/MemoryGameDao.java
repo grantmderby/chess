@@ -1,9 +1,9 @@
 package dataaccess;
 
 import java.util.*;
+import exception.*;
 
 import chess.ChessGame;
-import exception.*;
 import model.*;
 
 public class MemoryGameDao implements GameDao

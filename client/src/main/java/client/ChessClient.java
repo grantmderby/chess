@@ -1,9 +1,4 @@
-package client;
-
-import com.google.gson.Gson;
-import model.*;
-import exception.ResponseException;
-import server.ServerFacade;
+/*package client;
 
 
 import static client.EscapeSequences.*;
@@ -11,3 +6,4 @@ import static client.EscapeSequences.*;
 public class ChessClient
 {
 }
+*/

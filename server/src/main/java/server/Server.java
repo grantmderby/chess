@@ -10,12 +10,12 @@ import dataaccess.sql.MySQLUserDao;
 import io.javalin.*;
 import io.javalin.http.Context;
 
-import exception.*;
 import service.*;
 import dataaccess.*;
 import model.*;
 import request.*;
 import response.*;
+import exception.*;
 
 
 
@@ -122,7 +122,7 @@ public class Server
     private void joinGameHandler(Context ctx) throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException
     {
         String authToken = ctx.header("authorization");
-        var joinGame = new Gson().fromJson(ctx.body(),JoinGame.class);
+        var joinGame = new Gson().fromJson(ctx.body(), JoinGameRequest.class);
         gameService.joinGame(authToken,joinGame.playerColor(), joinGame.gameID());
         ctx.status(200);
     }

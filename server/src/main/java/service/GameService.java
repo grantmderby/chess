@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Objects;
 
 import dataaccess.*;
-import exception.*;
 import model.*;
 import response.*;
+import exception.*;
 
 
 public class GameService
