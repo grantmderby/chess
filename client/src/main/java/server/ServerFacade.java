@@ -29,7 +29,7 @@ public class ServerFacade
         var userData = new UserData(username, password, email);
         var request = buildRequest("POST","/user",userData,null);
         var response = sendRequest(request);
-        return handleResponse(response,AuthData.class);   //may through an error as username and authToken are returned
+        return handleResponse(response,AuthData.class);
     }
 
     public AuthData loginUser(String username, String password) throws ResponseException
