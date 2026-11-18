@@ -111,8 +111,8 @@ public class Server
     private void createGameHandler(Context ctx) throws UnauthorizedException, DataAccessException, BadRequestException
     {
         String authToken = ctx.header("authorization");
-        record GameName(String gameName){}
-        String gameName = new Gson().fromJson(ctx.body(),GameName.class).gameName();
+        //record GameName(String gameName){}
+        String gameName = new Gson().fromJson(ctx.body(),CreateGameRequest.class).gameName();
         int gameID = gameService.createGame(authToken,gameName);
         var message = Map.of("gameID", gameID);
         ctx.result(new Gson().toJson(message));

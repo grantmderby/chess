@@ -5,7 +5,7 @@ import exception.ResponseException;
 import model.AuthData;
 import org.junit.jupiter.api.*;
 import server.Server;
-import server.ServerFacade;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -128,7 +128,21 @@ public class ServerFacadeTests
         assertThrows(ResponseException.class,()->serverFacade.listGames(null));
     }
 
+    @Test
+    public void joinGameTestWithAuthToken() throws ResponseException
+    {
+        var response = createUser();
+        String gameName = "game 1";
+        int gameID = serverFacade.createGame(response.authToken(),gameName);
+        assertDoesNotThrow(()->serverFacade.joinGame(response.authToken(),"WHITE",gameID));
+    }
 
+    @Test
+    public void joinGameTestBadGameID() throws ResponseException
+    {
+        var response = createUser();
+        assertThrows(ResponseException.class, ()->serverFacade.joinGame(response.authToken(),"WHITE",0));
+    }
 
     private static AuthData createUser() throws ResponseException
     {

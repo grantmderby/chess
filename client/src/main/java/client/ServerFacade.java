@@ -1,4 +1,4 @@
-package server;
+package client;
 
 import com.google.gson.Gson;
 
@@ -7,6 +7,8 @@ import java.net.http.*;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.Map;
+import java.util.Objects;
 
 import exception.ResponseException;
 import model.*;
@@ -54,12 +56,12 @@ public class ServerFacade
         return handleResponse(response,ListResult.class);
     }
 
-    public String createGame(String authToken, String gameName) throws ResponseException
+    public int createGame(String authToken, String gameName) throws ResponseException
     {
         var createGameRequest = new CreateGameRequest(gameName);
-        var request = buildRequest("POST","/game",gameName,authToken);
+        var request = buildRequest("POST","/game",createGameRequest,authToken);
         var response = sendRequest(request);
-        return handleResponse(response,String.class);
+        return ((Double) Objects.requireNonNull(handleResponse(response, Map.class)).get("gameID")).intValue();
     }
 
     public void joinGame(String authToken, String playerColor, int gameID) throws ResponseException
