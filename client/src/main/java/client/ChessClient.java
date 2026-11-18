@@ -2,7 +2,6 @@ package client;
 
 import exception.ResponseException;
 import response.GameInfo;
-import response.ListResult;
 
 import java.util.Arrays;
 import java.util.List;
@@ -61,8 +60,8 @@ public class ChessClient
                 case "register" -> registerUser(params);
                 case "login" -> loginUser(params);
                 case "creategame" -> createGame(params);
-                case "joingame" -> "join game";
-                case "observegame" -> "observe game";
+                case "joingame" -> joinGame(params);
+                case "observegame" -> observeGame(params);
                 case "listgames" -> listGames();
                 case "logout" -> logoutUser();
                 case "quit" -> "quit";
@@ -93,7 +92,7 @@ public class ChessClient
                 - help
                 - listGames (List the games available to play or observe)
                 - createGame <gameName> (What would you like to name the new game?)
-                - joinGame <playerColor> (WHITE|BLACK) <gameName> (Choose a game to play in)
+                - joinGame <gameNumber> <playerColor> (WHITE|BLACK)
                 - observeGame <gameName> (See the current board state of a specific game)
                 - logout
                 - quit (closes the application)
@@ -158,29 +157,67 @@ public class ChessClient
         assertSignedIn();
         var response = server.listGames(token);
         int i = 0;
-        String responseString = "";
+        StringBuilder responseString = new StringBuilder();
         lastListedGames = response.games();
         for(var gameInfo : lastListedGames)
         {
 
             i++;
-            responseString = String.format("Game " + i + ": " + gameInfo.gameName());
+            responseString.append(String.format("Game " + i + ": \n", gameInfo.gameName()));
             if(gameInfo.whiteUsername()==null)
             {
-                responseString += "\nWhite Team: ";
+                responseString.append("White Team: \n");
             }
             else
             {
-                responseString += String.format("\nWhite Team: " + gameInfo.whiteUsername());
+                responseString.append(String.format("White Team: %s\n", gameInfo.whiteUsername()));
             }
             if(gameInfo.blackUsername()==null)
             {
-                responseString += "\nBlack Team: ";
+                responseString.append("Black Team: \n\n");
             }
-            responseString += String.format("\nBlack Team: " + gameInfo.blackUsername());
+            else
+            {
+                responseString.append(String.format("Black Team: %s\n\n", gameInfo.blackUsername()));
+            }
         }
 
-        return String.format("%s\n" + help(),responseString);
+        return String.format("%s\n" + help(), responseString);
+    }
+
+    private String joinGame(String... params) throws ResponseException
+    {
+        listGames();
+        if(params.length>=2)
+        {
+            int gameNumber = Integer.parseInt(params[0]);
+            if(gameNumber <= lastListedGames.size() && gameNumber>0)
+            {
+                String playerColor = params[1].toUpperCase();
+                var gameInfo = lastListedGames.get(gameNumber-1);
+                server.joinGame(token,playerColor,gameInfo.gameID());
+                listGames();
+                return String.format("%s has joined game %s as color %s\n" + help(), currentUser, gameInfo.gameName(), playerColor);
+            }
+            throw new ResponseException(400, "Error: the game number you chose does not exist\n" + help() );
+        }
+        throw new ResponseException(400, "Error: requires <gameNumber> <playerColor> (WHITE|BLACK)\n" + help());
+    }
+
+    private String observeGame(String...params) throws ResponseException
+    {
+        listGames();
+        if(params.length>=1)
+        {
+            int gameNumber = Integer.parseInt(params[0]);
+            if(gameNumber <= lastListedGames.size() && gameNumber>0)
+            {
+                var gameInfo = lastListedGames.get(gameNumber-1);
+                return String.format("%s is observing game %s\n" + help(), currentUser, gameInfo.gameName());
+            }
+            throw new ResponseException(400, "Error: the game number you chose does not exist\n" + help());
+        }
+        throw new ResponseException(400, "Error: requires <gameNumber>\n" + help());
     }
 
     private void assertSignedIn() throws ResponseException
