@@ -1,8 +1,11 @@
 package client;
 
 import exception.ResponseException;
+import response.GameInfo;
+import response.ListResult;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -13,6 +16,7 @@ public class ChessClient
     private State state = State.SIGNEDOUT;
     private String token;
     private String currentUser;
+    private List<GameInfo> lastListedGames;
 
     public ChessClient(String serverURL)
     {
@@ -29,9 +33,6 @@ public class ChessClient
         var result = "";
         while(!result.equals("quit"))
         {
-            //System.out.print(ERASE_SCREEN);
-
-            //System.out.println(help());
             printPrompt();
             String line = scanner.nextLine();
 
@@ -59,10 +60,10 @@ public class ChessClient
             {
                 case "register" -> registerUser(params);
                 case "login" -> loginUser(params);
-                case "creategame" -> String.format(ERASE_SCREEN + "%s was created successfully\n" + help(), createGame(params));
+                case "creategame" -> createGame(params);
                 case "joingame" -> "join game";
                 case "observegame" -> "observe game";
-                case "listgames" -> String.format(ERASE_SCREEN + "%s\n" + help(), listGames());
+                case "listgames" -> listGames();
                 case "logout" -> logoutUser();
                 case "quit" -> "quit";
                 default -> help();
@@ -156,8 +157,30 @@ public class ChessClient
     {
         assertSignedIn();
         var response = server.listGames(token);
-        System.out.println(response);
-        return "bob";
+        int i = 0;
+        String responseString = "";
+        lastListedGames = response.games();
+        for(var gameInfo : lastListedGames)
+        {
+
+            i++;
+            responseString = String.format("Game " + i + ": " + gameInfo.gameName());
+            if(gameInfo.whiteUsername()==null)
+            {
+                responseString += "\nWhite Team: ";
+            }
+            else
+            {
+                responseString += String.format("\nWhite Team: " + gameInfo.whiteUsername());
+            }
+            if(gameInfo.blackUsername()==null)
+            {
+                responseString += "\nBlack Team: ";
+            }
+            responseString += String.format("\nBlack Team: " + gameInfo.blackUsername());
+        }
+
+        return String.format("%s\n" + help(),responseString);
     }
 
     private void assertSignedIn() throws ResponseException
