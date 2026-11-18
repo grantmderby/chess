@@ -1,8 +1,8 @@
 package client;
 
-import dataaccess.AuthDao;
 import exception.DataAccessException;
 import exception.ResponseException;
+import model.AuthData;
 import org.junit.jupiter.api.*;
 import server.Server;
 import server.ServerFacade;
@@ -58,11 +58,84 @@ public class ServerFacadeTests
     @Test
     public void registerUserTestDuplicateUser() throws ResponseException
     {
+        createUser();
         String username = "user";
         String password = "pass";
         String email = "email";
-        serverFacade.registerUser(username, password, email);
         assertThrows(ResponseException.class,() -> serverFacade.registerUser(username,password,email));
+    }
+
+    @Test
+    public void loginUserNoUsernameTest() throws ResponseException
+    {
+        createUser();
+        String username = "user";
+        String password = "pass";
+        String email = "email";
+        assertThrows(ResponseException.class,()->serverFacade.loginUser(null,password));
+    }
+
+    @Test
+    public void logoutUserWithAuthToken() throws ResponseException
+    {
+        var response = createUser();
+        assertDoesNotThrow(()-> serverFacade.logoutUser(response.authToken()));
+    }
+
+    @Test
+    public void logoutUserNullAuthToken()
+    {
+        assertThrows(ResponseException.class,()-> serverFacade.logoutUser(null));
+    }
+
+    @Test
+    public void createGameWithAuthToken() throws ResponseException
+    {
+        var response = createUser();
+        String gameName = "game 1";
+        assertDoesNotThrow(()->serverFacade.createGame(response.authToken(),gameName));
+    }
+
+    @Test
+    public void createGameNullAuthToken()
+    {
+        String gameName = "game 1";
+        assertThrows(ResponseException.class,()->serverFacade.createGame(null,gameName));
+    }
+
+    @Test
+    public void createGameNullGameName() throws ResponseException
+    {
+        var response = createUser();
+        assertThrows(ResponseException.class,()->serverFacade.createGame(response.authToken(),null));
+    }
+
+    @Test
+    public void listGamesTestWithAuthToken() throws ResponseException
+    {
+        var response = createUser();
+        String gameName = "game 1";
+        serverFacade.createGame(response.authToken(),gameName);
+        assert(serverFacade.listGames(response.authToken())!=null);
+    }
+
+    @Test
+    public void listGamesTestNullAuthToken() throws ResponseException
+    {
+        var response = createUser();
+        String gameName = "game 1";
+        serverFacade.createGame(response.authToken(),gameName);
+        assertThrows(ResponseException.class,()->serverFacade.listGames(null));
+    }
+
+
+
+    private static AuthData createUser() throws ResponseException
+    {
+        String username = "user";
+        String password = "pass";
+        String email = "email";
+        return serverFacade.registerUser(username, password, email);
     }
 
 }

@@ -57,7 +57,7 @@ public class ServerFacade
     public String createGame(String authToken, String gameName) throws ResponseException
     {
         var createGameRequest = new CreateGameRequest(gameName);
-        var request = buildRequest("POST","/game",createGameRequest,authToken);
+        var request = buildRequest("POST","/game",gameName,authToken);
         var response = sendRequest(request);
         return handleResponse(response,String.class);
     }
@@ -113,7 +113,7 @@ public class ServerFacade
             return client.send(request, BodyHandlers.ofString());
         } catch (Exception ex)
         {
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
+            throw new ResponseException(ex.getMessage());
         }
     }
 
@@ -123,12 +123,7 @@ public class ServerFacade
         if (!isSuccessful(status))
         {
             var body = response.body();
-            if (body != null)
-            {
-                throw ResponseException.fromJson(body);
-            }
-
-            throw new ResponseException(ResponseException.fromHttpStatusCode(status), "other failure: " + status);
+            throw ResponseException.fromJson(response.statusCode(),body);
         }
 
         if (responseClass != null)
