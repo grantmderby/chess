@@ -12,6 +12,7 @@ public class ChessClient
     private final ServerFacade server;
     private State state = State.SIGNEDOUT;
     private String token;
+    private String currentUser;
 
     public ChessClient(String serverURL)
     {
@@ -53,12 +54,12 @@ public class ChessClient
             String[] params = Arrays.copyOfRange(tokens,1,tokens.length);
             return switch(cmd)
             {
-                case "register" -> "You logged in as: " + registerUser(params);
-                case "signin" -> "sign in";
+                case "register" -> String.format("%s logged in", registerUser(params));
+                case "login" -> String.format("%s logged in", loginUser(params));
                 case "creategame" -> "create game";
                 case "joingame" -> "join game";
                 case "observegame" -> "observe game";
-                case "logout" -> "logout";
+                case "logout" -> String.format("%s logged out", logoutUser());
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -78,7 +79,7 @@ public class ChessClient
         {
             return """
                     - register <username> <password> <email> (Create a chess account)
-                    - signIn <username> <password>
+                    - login <username> <password>
                     - quit (closes the application)
                     """;
         }
@@ -94,6 +95,7 @@ public class ChessClient
 
     private String registerUser(String... params) throws ResponseException
     {
+        assertSignedOut();
         if(params.length>=3)
         {
             String username = params[0];
@@ -102,8 +104,49 @@ public class ChessClient
             var response = server.registerUser(username, password, email);
             state = State.SIGNEDIN;
             token = response.authToken();
-            return response.username();
+            currentUser = response.username();
+            return currentUser;
         }
         throw new ResponseException(400,"Error: requires <username> <password> <email>");
+    }
+
+    private String loginUser(String... params) throws ResponseException
+    {
+        assertSignedOut();
+        if(params.length>=2)
+        {
+            String username = params[0];
+            String password = params[1];
+            var response = server.loginUser(username,password);
+            state = State.SIGNEDIN;
+            token = response.authToken();
+            currentUser = response.username();
+            return currentUser;
+        }
+        throw new ResponseException(400, "Error: requires <username> <password>");
+    }
+
+    private String logoutUser() throws ResponseException
+    {
+        assertSignedIn();
+        server.logoutUser(token);
+        state = State.SIGNEDOUT;
+        return currentUser;
+    }
+
+    private void assertSignedIn() throws ResponseException
+    {
+        if(state==State.SIGNEDOUT)
+        {
+            throw new ResponseException(400,"You must log in");
+        }
+    }
+
+    private void assertSignedOut() throws ResponseException
+    {
+        if(state==State.SIGNEDIN)
+        {
+            throw new ResponseException(400, "You must log out fist in order to register or log in");
+        }
     }
 }
