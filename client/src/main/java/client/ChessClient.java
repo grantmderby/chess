@@ -29,6 +29,9 @@ public class ChessClient
         var result = "";
         while(!result.equals("quit"))
         {
+            //System.out.print(ERASE_SCREEN);
+
+            //System.out.println(help());
             printPrompt();
             String line = scanner.nextLine();
 
@@ -54,12 +57,13 @@ public class ChessClient
             String[] params = Arrays.copyOfRange(tokens,1,tokens.length);
             return switch(cmd)
             {
-                case "register" -> String.format("%s logged in", registerUser(params));
-                case "login" -> String.format("%s logged in", loginUser(params));
-                case "creategame" -> "create game";
+                case "register" -> registerUser(params);
+                case "login" -> loginUser(params);
+                case "creategame" -> String.format(ERASE_SCREEN + "%s was created successfully\n" + help(), createGame(params));
                 case "joingame" -> "join game";
                 case "observegame" -> "observe game";
-                case "logout" -> String.format("%s logged out", logoutUser());
+                case "listgames" -> String.format(ERASE_SCREEN + "%s\n" + help(), listGames());
+                case "logout" -> logoutUser();
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -70,7 +74,7 @@ public class ChessClient
     }
 
     private void printPrompt() {
-        System.out.print("\n" + ERASE_SCREEN + ">>> " + SET_TEXT_COLOR_GREEN);
+        System.out.print("\n" + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 
     public String help()
@@ -78,15 +82,17 @@ public class ChessClient
         if (state == State.SIGNEDOUT)
         {
             return """
+                    - help
                     - register <username> <password> <email> (Create a chess account)
                     - login <username> <password>
                     - quit (closes the application)
                     """;
         }
         return """
+                - help
                 - listGames (List the games available to play or observe)
                 - createGame <gameName> (What would you like to name the new game?)
-                - joinGame <playerColor (white or black)> <gameName> (Choose a game to play in)
+                - joinGame <playerColor> (WHITE|BLACK) <gameName> (Choose a game to play in)
                 - observeGame <gameName> (See the current board state of a specific game)
                 - logout
                 - quit (closes the application)
@@ -105,9 +111,9 @@ public class ChessClient
             state = State.SIGNEDIN;
             token = response.authToken();
             currentUser = response.username();
-            return currentUser;
+            return String.format(ERASE_SCREEN + "%s logged in\n" + help(), currentUser);
         }
-        throw new ResponseException(400,"Error: requires <username> <password> <email>");
+        throw new ResponseException(400,"Error: requires <username> <password> <email>\n" + help());
     }
 
     private String loginUser(String... params) throws ResponseException
@@ -121,9 +127,9 @@ public class ChessClient
             state = State.SIGNEDIN;
             token = response.authToken();
             currentUser = response.username();
-            return currentUser;
+            return String.format(ERASE_SCREEN + "%s logged in\n" + help(), currentUser);
         }
-        throw new ResponseException(400, "Error: requires <username> <password>");
+        throw new ResponseException(400, "Error: requires <username> <password>\n" + help());
     }
 
     private String logoutUser() throws ResponseException
@@ -131,14 +137,34 @@ public class ChessClient
         assertSignedIn();
         server.logoutUser(token);
         state = State.SIGNEDOUT;
-        return currentUser;
+        return String.format(ERASE_SCREEN + "%s logged out\n" + help(), currentUser);
+    }
+
+    private String createGame(String... params) throws ResponseException
+    {
+        assertSignedIn();
+        if(params.length>=1)
+        {
+            String gameName = params[0];
+            var response = server.createGame(token, gameName);
+            return String.format(ERASE_SCREEN + "Game: %s with ID: %d was created successfully\n" + help(), gameName,response);
+        }
+        throw new ResponseException(400, "Error: requires <gameName>\n" + help());
+    }
+
+    private String listGames() throws ResponseException
+    {
+        assertSignedIn();
+        var response = server.listGames(token);
+        System.out.println(response);
+        return "bob";
     }
 
     private void assertSignedIn() throws ResponseException
     {
         if(state==State.SIGNEDOUT)
         {
-            throw new ResponseException(400,"You must log in");
+            throw new ResponseException(400,"You must log in\n" + help());
         }
     }
 
@@ -146,7 +172,7 @@ public class ChessClient
     {
         if(state==State.SIGNEDIN)
         {
-            throw new ResponseException(400, "You must log out fist in order to register or log in");
+            throw new ResponseException(400, "You must log out fist in order to register or log in\n" + help());
         }
     }
 }
