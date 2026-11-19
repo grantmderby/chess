@@ -38,26 +38,11 @@ public class BoardMaker
             {
                 if((i+k)%2==1)
                 {
-                    if(Objects.equals(playerColor, "WHITE"))
-                    {
-                        result.append(SET_BG_COLOR_DARK_GREY);
-                    }
-                    else
-                    {
-                        result.append(SET_BG_COLOR_WHITE);
-                    }
+                    result.append(SET_BG_COLOR_DARK_GREY);
                 }
                 else
                 {
-                    if(Objects.equals(playerColor, "WHITE"))
-                    {
-                        result.append(SET_BG_COLOR_WHITE);
-                    }
-                    else
-                    {
-                        result.append(SET_BG_COLOR_DARK_GREY);
-                    }
-
+                    result.append(SET_BG_COLOR_WHITE);
                 }
 
 
@@ -119,7 +104,14 @@ public class BoardMaker
         }
     }
 
-    private void pieceSelector(StringBuilder result, ChessPiece piece, String blackKing, String blackQueen, String blackKnight, String blackRook, String blackBishop, String blackPawn)
+    private void pieceSelector(StringBuilder result,
+                               ChessPiece piece,
+                               String blackKing,
+                               String blackQueen,
+                               String blackKnight,
+                               String blackRook,
+                               String blackBishop,
+                               String blackPawn)
     {
         switch (piece.getPieceType())
         {

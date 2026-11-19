@@ -18,8 +18,8 @@ public class ChessClient
     private String token;
     private String currentUser;
     private List<GameInfo> lastListedGames;
-    private BoardMaker renderer;
-    private ChessBoard board;
+    private final BoardMaker renderer;
+    private final ChessBoard board;
 
     public ChessClient(String serverURL)
     {
@@ -169,7 +169,7 @@ public class ChessClient
         {
 
             i++;
-            responseString.append(String.format("Game " + i + ": \n", gameInfo.gameName()));
+            responseString.append(String.format("Game " + i + ": %s\n", gameInfo.gameName()));
             if(gameInfo.whiteUsername()==null)
             {
                 responseString.append("White Team: \n");
@@ -196,17 +196,26 @@ public class ChessClient
         listGames();
         if(params.length>=2)
         {
-            int gameNumber = Integer.parseInt(params[0]);
-            if(gameNumber <= lastListedGames.size() && gameNumber>0)
+            try
             {
-                String playerColor = params[1].toUpperCase();
-                var gameInfo = lastListedGames.get(gameNumber-1);
-                server.joinGame(token,playerColor,gameInfo.gameID());
-                listGames();
-                System.out.println(renderer.boardRenderer(playerColor,board));
-                return String.format("%s has joined game %s as color %s\n" + help(), currentUser, gameInfo.gameName(), playerColor);
+                int gameNumber = Integer.parseInt(params[0]);
+                if (gameNumber <= lastListedGames.size() && gameNumber > 0)
+                {
+                    String playerColor = params[1].toUpperCase();
+                    var gameInfo = lastListedGames.get(gameNumber - 1);
+                    server.joinGame(token, playerColor, gameInfo.gameID());
+                    listGames();
+                    System.out.println(renderer.boardRenderer(playerColor, board));
+                    return String.format("%s has joined game %s as color %s\n" + help(),
+                            currentUser,
+                            gameInfo.gameName(),
+                            playerColor);
+                }
+                throw new ResponseException(400, "Error: the game number you chose does not exist\n" + help());
+            }catch(NumberFormatException e)
+            {
+                throw new ResponseException(400, "Error: the game number you chose does not exist\n" + help());
             }
-            throw new ResponseException(400, "Error: the game number you chose does not exist\n" + help() );
         }
         throw new ResponseException(400, "Error: requires <gameNumber> <playerColor> (WHITE|BLACK)\n" + help());
     }
@@ -216,14 +225,21 @@ public class ChessClient
         listGames();
         if(params.length>=1)
         {
-            int gameNumber = Integer.parseInt(params[0]);
-            if(gameNumber <= lastListedGames.size() && gameNumber>0)
+            try
             {
-                var gameInfo = lastListedGames.get(gameNumber-1);
-                System.out.println(renderer.boardRenderer("WHITE",board));
-                return String.format("%s is observing game %s\n" + help(), currentUser, gameInfo.gameName());
+                int gameNumber = Integer.parseInt(params[0]); // fails on strings
+                if(gameNumber <= lastListedGames.size() && gameNumber>0)
+                {
+                    var gameInfo = lastListedGames.get(gameNumber-1);
+                    System.out.println(renderer.boardRenderer("WHITE",board));
+                    return String.format("%s is observing game %s\n" + help(), currentUser, gameInfo.gameName());
+                }
+                throw new ResponseException(400, "Error: the game number you chose does not exist\n" + help());
             }
-            throw new ResponseException(400, "Error: the game number you chose does not exist\n" + help());
+            catch(NumberFormatException e)
+            {
+                throw new ResponseException(400, "Error: the game number you chose does not exist\n" + help());
+            }
         }
         throw new ResponseException(400, "Error: requires <gameNumber>\n" + help());
     }
