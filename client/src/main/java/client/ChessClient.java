@@ -203,6 +203,7 @@ public class ChessClient
                 var gameInfo = lastListedGames.get(gameNumber-1);
                 server.joinGame(token,playerColor,gameInfo.gameID());
                 listGames();
+                System.out.println(renderer.boardRenderer(playerColor,board));
                 return String.format("%s has joined game %s as color %s\n" + help(), currentUser, gameInfo.gameName(), playerColor);
             }
             throw new ResponseException(400, "Error: the game number you chose does not exist\n" + help() );

@@ -4,7 +4,8 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
-import ui.EscapeSequences;
+
+import java.util.Objects;
 
 import static ui.EscapeSequences.*;
 
@@ -24,16 +25,39 @@ public class BoardMaker
         result.append("\n");
         for (int i = 0; i < 8; i++)
         {
-            result.append(8 - i).append(" ");
+            if(Objects.equals(playerColor, "WHITE"))
+            {
+                result.append(8 - i).append(" ");
+            }
+            else
+            {
+                result.append(i+1).append(" ");
+            }
+
             for (int k = 0; k < 8; k++)
             {
                 if((i+k)%2==1)
                 {
-                    result.append(SET_BG_COLOR_DARK_GREY);
+                    if(Objects.equals(playerColor, "WHITE"))
+                    {
+                        result.append(SET_BG_COLOR_DARK_GREY);
+                    }
+                    else
+                    {
+                        result.append(SET_BG_COLOR_WHITE);
+                    }
                 }
                 else
                 {
-                    result.append(SET_BG_COLOR_WHITE);
+                    if(Objects.equals(playerColor, "WHITE"))
+                    {
+                        result.append(SET_BG_COLOR_WHITE);
+                    }
+                    else
+                    {
+                        result.append(SET_BG_COLOR_DARK_GREY);
+                    }
+
                 }
 
 
@@ -41,7 +65,15 @@ public class BoardMaker
 
                 result.append(RESET_BG_COLOR);
             }
-            result.append(" ").append(8 - i).append("\n");;
+            if(Objects.equals(playerColor, "WHITE"))
+            {
+                result.append(" ").append(8 - i).append("\n");
+            }
+            else
+            {
+                result.append(i+1).append(" ").append("\n");
+            }
+
         }
         result.append(EMPTY);
         for(char c = 'a'; c<='h';c++)
