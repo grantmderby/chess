@@ -1,5 +1,7 @@
 package client;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import exception.ResponseException;
 import response.GameInfo;
 
@@ -16,10 +18,14 @@ public class ChessClient
     private String token;
     private String currentUser;
     private List<GameInfo> lastListedGames;
+    private BoardMaker renderer;
+    private ChessBoard board;
 
     public ChessClient(String serverURL)
     {
         server = new ServerFacade(serverURL);
+        board = new ChessGame().getBoard();
+        renderer = new BoardMaker();
     }
 
     public void run()
@@ -213,6 +219,7 @@ public class ChessClient
             if(gameNumber <= lastListedGames.size() && gameNumber>0)
             {
                 var gameInfo = lastListedGames.get(gameNumber-1);
+                System.out.println(renderer.boardRenderer("WHITE",board));
                 return String.format("%s is observing game %s\n" + help(), currentUser, gameInfo.gameName());
             }
             throw new ResponseException(400, "Error: the game number you chose does not exist\n" + help());
